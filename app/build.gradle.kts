@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.config.LanguageVersion
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
@@ -8,7 +10,7 @@ kotlin {
 
     sourceSets.all {
         languageSettings {
-            languageVersion = "2.0"
+            languageVersion = LanguageVersion.KOTLIN_2_0.versionString
         }
     }
 }
@@ -28,20 +30,24 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
+
     buildFeatures {
         compose = true
     }
+
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.11-dev-k2.0.0-Beta5-b5a216d0ac6"
+        kotlinCompilerExtensionVersion = libs.versions.composeCompilerExt.get()
     }
 }
 
 dependencies {
     implementation(libs.pandaloop.core)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.coroutines.core)
+    implementation(libs.androidx.lifecycle.viewmodel)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    runtimeOnly(libs.coroutines.android)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
