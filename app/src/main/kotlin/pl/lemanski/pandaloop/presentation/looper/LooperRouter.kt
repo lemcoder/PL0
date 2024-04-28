@@ -25,7 +25,9 @@ fun LooperRouter() {
     val state by viewModel.stateFlow.collectAsState()
 
     LooperScreen(
-        text = state.text,
-        onButtonClick = state.onButtonClick
+        playbackButton = state.playbackButton,
+        tempo = state.tempo,
+        timeSignature = state.timeSignature,
+        trackCards = state.tracks
     )
 }
