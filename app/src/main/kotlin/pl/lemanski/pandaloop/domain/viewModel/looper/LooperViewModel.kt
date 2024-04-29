@@ -16,6 +16,7 @@ import pl.lemanski.pandaloop.TimeSignature
 import pl.lemanski.pandaloop.domain.PermissionManager
 import pl.lemanski.pandaloop.domain.model.TrackNumber
 import pl.lemanski.pandaloop.domain.model.visual.IconResource
+import pl.lemanski.pandaloop.getBufferSizeInBytesWithTempo
 
 class LooperViewModel(
     private val permissionManager: PermissionManager,
@@ -25,7 +26,7 @@ class LooperViewModel(
 
     private val timeSignature: TimeSignature = Common
     private val tempo: Int = 60
-    private val emptyBuffer = ByteArray(7056000) // FIXME
+    private val emptyBuffer = ByteArray(timeSignature.getBufferSizeInBytesWithTempo(tempo).toInt())
 
     private val tracks: MutableMap<TrackNumber, ByteArray> = mutableMapOf(
         0 to emptyBuffer,
@@ -107,6 +108,7 @@ class LooperViewModel(
         val buffer = newRecording.recordedBuffer
 
         Log.d(this::class.simpleName, buffer.size.toString())
+        Log.d(this::class.simpleName, emptyBuffer.size.toString())
         tracks[trackNumber] = buffer
         mixTracks()
 
@@ -122,9 +124,7 @@ class LooperViewModel(
 
         tracks.forEach { (number, buffer) ->
             loop.setTrack(number)
-            if (!buffer.contentEquals(emptyBuffer)) {
-                loop.mixBuffer(buffer)
-            }
+            loop.mixBuffer(buffer)
         }
     }
 
