@@ -1,4 +1,4 @@
-package pl.lemanski.pandaloop.domain
+package pl.lemanski.pandaloop.domain.platform
 
 interface PermissionManager {
     suspend fun askPermission(permission: Permission): PermissionState

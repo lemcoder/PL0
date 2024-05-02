@@ -13,7 +13,7 @@ import pl.lemanski.pandaloop.Common
 import pl.lemanski.pandaloop.Loop
 import pl.lemanski.pandaloop.Recording
 import pl.lemanski.pandaloop.TimeSignature
-import pl.lemanski.pandaloop.domain.PermissionManager
+import pl.lemanski.pandaloop.domain.platform.PermissionManager
 import pl.lemanski.pandaloop.domain.model.TrackNumber
 import pl.lemanski.pandaloop.domain.model.visual.IconResource
 import pl.lemanski.pandaloop.getBufferSizeInBytesWithTempo
@@ -102,7 +102,7 @@ class LooperViewModel(
         val recordingTime = timeSignature.getTimeWithTempo(tempo)
         val newRecording = Recording(recordingTime)
         newRecording.start()
-        delay(recordingTime.toLong())
+        delay(recordingTime.toLong() + 200L) // Add some padding
         newRecording.stop()
 
         val buffer = newRecording.recordedBuffer

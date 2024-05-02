@@ -4,7 +4,7 @@ import android.content.pm.PackageManager
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import pl.lemanski.pandaloop.domain.PermissionManager
+import pl.lemanski.pandaloop.domain.platform.PermissionManager
 import java.util.UUID
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine

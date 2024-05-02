@@ -45,8 +45,11 @@ android {
 dependencies {
     implementation(libs.pandaloop.core)
     implementation(libs.coroutines.core)
+    
     implementation(libs.androidx.lifecycle.viewmodel)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    implementation(libs.navigation.compose)
     runtimeOnly(libs.coroutines.android)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
