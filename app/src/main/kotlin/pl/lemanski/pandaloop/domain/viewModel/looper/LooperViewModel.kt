@@ -9,31 +9,28 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import pl.lemanski.pandaloop.Common
 import pl.lemanski.pandaloop.Loop
 import pl.lemanski.pandaloop.Recording
 import pl.lemanski.pandaloop.TimeSignature
-import pl.lemanski.pandaloop.domain.platform.PermissionManager
 import pl.lemanski.pandaloop.domain.model.TrackNumber
 import pl.lemanski.pandaloop.domain.model.visual.IconResource
-import pl.lemanski.pandaloop.getBufferSizeInBytesWithTempo
+import pl.lemanski.pandaloop.domain.navigation.Destination
+import pl.lemanski.pandaloop.domain.navigation.NavigationController
+import pl.lemanski.pandaloop.domain.platform.PermissionManager
+import pl.lemanski.pandaloop.domain.utils.emptyBuffer
+import pl.lemanski.pandaloop.getTimeWithTempo
 
 class LooperViewModel(
     private val permissionManager: PermissionManager,
+    private val navigationController: NavigationController,
+    private val key: Destination.LoopScreen,
     private val loop: Loop = Loop()
 ) : ViewModel(), LooperContract.ViewModel {
     private var mode: Mode = Mode.EDIT
-
-    private val timeSignature: TimeSignature = Common
-    private val tempo: Int = 60
-    private val emptyBuffer = ByteArray(timeSignature.getBufferSizeInBytesWithTempo(tempo).toInt())
-
-    private val tracks: MutableMap<TrackNumber, ByteArray> = mutableMapOf(
-        0 to emptyBuffer,
-        1 to emptyBuffer,
-        2 to emptyBuffer,
-        3 to emptyBuffer,
-    )
+    private val timeSignature: TimeSignature = key.timeSignature
+    private val tempo: Int = key.tempo
+    private val tracks: MutableMap<TrackNumber, ByteArray> = key.tracks.toMutableMap()
+    private val emptyBuffer: ByteArray = timeSignature.emptyBuffer(tempo)
 
     private val _stateFlow = MutableStateFlow(
         LooperContract.State(

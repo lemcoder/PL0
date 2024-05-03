@@ -1,6 +1,6 @@
 package pl.lemanski.pandaloop.domain.viewModel.start
 
-import pl.lemanski.pandaloop.domain.model.visual.IconResource
+import pl.lemanski.pandaloop.domain.model.visual.Component
 import pl.lemanski.pandaloop.domain.viewModel.PandaLoopViewModel
 
 interface StartContract {
@@ -11,11 +11,8 @@ interface StartContract {
     }
 
     data class State(
-        val tempoPicker: TempoPicker,
-        val timeSignatureSelect: TimeSignatureSelect
-    ) {
-        data object TempoPicker // TODO
-
-        data object TimeSignatureSelect // TODO
-    }
+        val tempoPicker: Component.TempoPicker,
+        val timeSignatureSelect: Component.TextSelect,
+        val createLoopButton: Component.Button
+    )
 }
