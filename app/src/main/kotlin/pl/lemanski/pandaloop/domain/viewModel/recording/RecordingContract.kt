@@ -1,34 +1,23 @@
 package pl.lemanski.pandaloop.domain.viewModel.recording
 
 import kotlinx.coroutines.Job
-import pl.lemanski.pandaloop.domain.model.visual.IconResource
+import pl.lemanski.pandaloop.domain.model.visual.Component
 import pl.lemanski.pandaloop.domain.viewModel.PandaLoopViewModel
 
 interface RecordingContract {
     interface ViewModel : PandaLoopViewModel<State> {
         fun onRecordClick(): Job
-        fun onCountdownChange(count: Int)
+        fun onCountdownChanged(count: String)
     }
 
     data class State(
-        val recordButton: IconButton,
-        val countdownSelect: SelectInput
+        val recordButton: Component.IconButton,
+        val countdownSelect: Component.TextSelect,
+        val countdownScrim: CountdownScrim
     ) {
-        data class SelectInput(
-            val label: String,
-            val values: List<Option>,
-            val onSelected: (Int) -> Unit,
-            val selected: Int
-        ) {
-            data class Option(
-                val value: Int,
-                val label: String,
-            )
-        }
-
-        data class IconButton(
-            val icon: IconResource,
-            val onClick: () -> Unit
+        data class CountdownScrim(
+            val visible: Boolean,
+            val text: String
         )
     }
 }

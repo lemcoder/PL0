@@ -11,13 +11,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import pl.lemanski.pandaloop.domain.model.visual.Component
 import pl.lemanski.pandaloop.domain.viewModel.looper.LooperContract
 import pl.lemanski.pandaloop.presentation.looper.components.TrackCard
 import pl.lemanski.pandaloop.presentation.visual.toImageVector
 
 @Composable
 fun LooperScreen(
-    playbackButton: LooperContract.State.IconButton,
+    playbackButton: Component.IconButton,
     tempo: String,
     timeSignature: String,
     trackCards: List<LooperContract.State.TrackCard>
@@ -26,8 +27,7 @@ fun LooperScreen(
         modifier = Modifier.fillMaxSize()
     ) { paddingValues ->
         Column(
-            modifier = Modifier.padding(paddingValues),
-
+            modifier = Modifier.padding(paddingValues)
         ) {
             Text(text = tempo)
             Text(text = timeSignature)

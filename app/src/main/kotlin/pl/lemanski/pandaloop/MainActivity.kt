@@ -2,6 +2,7 @@ package pl.lemanski.pandaloop
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -15,6 +16,7 @@ import pl.lemanski.pandaloop.domain.di.DependencyResolver
 import pl.lemanski.pandaloop.domain.di.SingletonDependencyProvider
 import pl.lemanski.pandaloop.domain.navigation.Destination
 import pl.lemanski.pandaloop.domain.navigation.NavigationController
+import pl.lemanski.pandaloop.domain.navigation.NavigationEvent
 import pl.lemanski.pandaloop.domain.platform.PermissionManager
 import pl.lemanski.pandaloop.platform.PermissionManagerImpl
 import pl.lemanski.pandaloop.presentation.looper.LooperRouter
@@ -29,28 +31,35 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val navHostController = rememberNavController()
+            navHostController.enableOnBackPressed(false)
             val navigationController = rememberNavigationController()
             val navigationState by navigationController.navigationState.collectAsState()
 
+
             NavHost(
                 navController = navHostController,
-                startDestination = navigationState::class.java.simpleName
+                startDestination = Destination.StartScreen::class.java.simpleName, // TODO get from navigation state (recomposition issues)
             ) {
                 composable(Destination.StartScreen::class.java.simpleName) {
                     StartRouter()
                 }
 
                 composable(Destination.RecordingScreen::class.java.simpleName) {
+                    BackHandler { navigationController.goBack() }
                     RecordingRouter()
                 }
 
                 composable(Destination.LoopScreen::class.java.simpleName) {
+                    BackHandler { navigationController.goBack() }
                     LooperRouter()
                 }
             }
 
-            LaunchedEffect(navigationState::class) {
-                navHostController.navigate(navigationState::class.java.simpleName)
+            LaunchedEffect(navigationState.destination::class) {
+                when (navigationState.direction) {
+                    NavigationEvent.Direction.BACKWARD -> navHostController.popBackStack()
+                    NavigationEvent.Direction.FORWARD  -> navHostController.navigate(navigationState.destination::class.java.simpleName)
+                }
             }
         }
     }

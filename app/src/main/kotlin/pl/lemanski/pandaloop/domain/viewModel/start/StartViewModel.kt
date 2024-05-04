@@ -38,7 +38,8 @@ class StartViewModel(
         )
     )
 
-    init {
+    override val stateFlow: StateFlow<StartContract.State> = _stateFlow.asStateFlow()
+    override fun initialize() {
         val permissionState = permissionManager.checkPermissionState(PermissionManager.Permission.RECORD_AUDIO)
         if (permissionState != PermissionManager.PermissionState.GRANTED) {
             viewModelScope.launch {
@@ -49,8 +50,6 @@ class StartViewModel(
             }
         }
     }
-
-    override val stateFlow: StateFlow<StartContract.State> = _stateFlow.asStateFlow()
 
     override fun onTempoChanged(tempo: Int) {
         _stateFlow.update { state ->
@@ -78,7 +77,7 @@ class StartViewModel(
 
         navigationController.goTo(
             Destination.LoopScreen(
-                tracks = mapOf(
+                tracks = mutableMapOf(
                     0 to emptyBuffer,
                     1 to emptyBuffer,
                     2 to emptyBuffer,

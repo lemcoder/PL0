@@ -7,11 +7,13 @@ sealed interface Destination {
     data object StartScreen : Destination
 
     data class RecordingScreen(
-        val trackNumber: TrackNumber
+        val trackNumber: TrackNumber,
+        val tempo: Int,
+        val timeSignature: TimeSignature
     ) : Destination
 
     data class LoopScreen(
-        var tracks: Map<TrackNumber, ByteArray>,
+        var tracks: MutableMap<TrackNumber, ByteArray>,
         val tempo: Int,
         val timeSignature: TimeSignature
     ) : Destination

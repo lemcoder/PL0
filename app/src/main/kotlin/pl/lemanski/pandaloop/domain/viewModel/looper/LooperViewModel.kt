@@ -3,25 +3,23 @@ package pl.lemanski.pandaloop.domain.viewModel.looper
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import pl.lemanski.pandaloop.Loop
-import pl.lemanski.pandaloop.Recording
 import pl.lemanski.pandaloop.TimeSignature
 import pl.lemanski.pandaloop.domain.model.TrackNumber
+import pl.lemanski.pandaloop.domain.model.visual.Component
 import pl.lemanski.pandaloop.domain.model.visual.IconResource
 import pl.lemanski.pandaloop.domain.navigation.Destination
 import pl.lemanski.pandaloop.domain.navigation.NavigationController
-import pl.lemanski.pandaloop.domain.platform.PermissionManager
 import pl.lemanski.pandaloop.domain.utils.emptyBuffer
-import pl.lemanski.pandaloop.getTimeWithTempo
 
 class LooperViewModel(
-    private val permissionManager: PermissionManager,
     private val navigationController: NavigationController,
     private val key: Destination.LoopScreen,
     private val loop: Loop = Loop()
@@ -29,14 +27,14 @@ class LooperViewModel(
     private var mode: Mode = Mode.EDIT
     private val timeSignature: TimeSignature = key.timeSignature
     private val tempo: Int = key.tempo
-    private val tracks: MutableMap<TrackNumber, ByteArray> = key.tracks.toMutableMap()
+    private val tracks: MutableMap<TrackNumber, ByteArray> = key.tracks
     private val emptyBuffer: ByteArray = timeSignature.emptyBuffer(tempo)
 
     private val _stateFlow = MutableStateFlow(
         LooperContract.State(
             timeSignature = timeSignature.toString(),
             tempo = tempo.toString(),
-            playbackButton = LooperContract.State.IconButton(
+            playbackButton = Component.IconButton(
                 icon = IconResource.PLAY_ARROW,
                 onClick = ::onPlaybackClick
             ),
@@ -44,18 +42,11 @@ class LooperViewModel(
         )
     )
 
-    init {
-        viewModelScope.launch {
-            var recordAudioPermissionState: PermissionManager.PermissionState = PermissionManager.PermissionState.NOT_DETERMINED
-
-            while (recordAudioPermissionState != PermissionManager.PermissionState.GRANTED) {
-                recordAudioPermissionState = permissionManager.checkPermissionState(PermissionManager.Permission.RECORD_AUDIO)
-                permissionManager.askPermission(PermissionManager.Permission.RECORD_AUDIO)
-            }
-        }
-    }
-
     override val stateFlow: StateFlow<LooperContract.State> = _stateFlow.asStateFlow()
+
+    override fun initialize() {
+        mixTracks()
+    }
 
     override fun onPlaybackClick() {
         if (mode == Mode.PLAYBACK) {
@@ -68,6 +59,7 @@ class LooperViewModel(
             }
 
         } else {
+            Log.e("LooperViewModel", "${tracks.map { it.value.size.toString() }}")
             loop.play()
             mode = Mode.PLAYBACK
             _stateFlow.update { state ->
@@ -91,37 +83,35 @@ class LooperViewModel(
         }
     }
 
-    override fun onTrackRecordClick(trackNumber: TrackNumber) = viewModelScope.launch {
-        if (mode != Mode.EDIT) return@launch
+    override fun onTrackRecordClick(trackNumber: TrackNumber) {
+        if (mode != Mode.EDIT) return
 
-        loop.setTrack(trackNumber)
-
-        val recordingTime = timeSignature.getTimeWithTempo(tempo)
-        val newRecording = Recording(recordingTime)
-        newRecording.start()
-        delay(recordingTime.toLong() + 200L) // Add some padding
-        newRecording.stop()
-
-        val buffer = newRecording.recordedBuffer
-
-        Log.d(this::class.simpleName, buffer.size.toString())
-        Log.d(this::class.simpleName, emptyBuffer.size.toString())
-        tracks[trackNumber] = buffer
-        mixTracks()
-
-        _stateFlow.update { state ->
-            state.copy(
-                tracks = tracks.toTrackCards()
+        navigationController.goTo(
+            Destination.RecordingScreen(
+                trackNumber = trackNumber,
+                tempo = tempo,
+                timeSignature = timeSignature
             )
-        }
+        )
     }
 
     private fun mixTracks() {
         if (mode != Mode.EDIT) return
 
-        tracks.forEach { (number, buffer) ->
-            loop.setTrack(number)
-            loop.mixBuffer(buffer)
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                tracks.forEach { (number, buffer) ->
+                    loop.setTrack(number)
+                    loop.mixBuffer(buffer)
+                }
+
+                _stateFlow.update { state ->
+                    state.copy(
+                        tracks = tracks.toTrackCards()
+                    )
+                }
+
+            }
         }
     }
 
@@ -136,6 +126,11 @@ class LooperViewModel(
                 onRecordClick = ::onTrackRecordClick,
             )
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        loop.close()
     }
 
     internal enum class Mode {

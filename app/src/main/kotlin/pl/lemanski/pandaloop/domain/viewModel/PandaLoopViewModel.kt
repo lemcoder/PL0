@@ -4,4 +4,5 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface PandaLoopViewModel<STATE> {
     val stateFlow: StateFlow<STATE>
+    fun initialize() { }
 }
