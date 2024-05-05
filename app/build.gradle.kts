@@ -45,7 +45,7 @@ android {
 dependencies {
     implementation(libs.pandaloop.core)
     implementation(libs.coroutines.core)
-    
+
     implementation(libs.androidx.lifecycle.viewmodel)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
@@ -56,4 +56,6 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.material3)
+    debugImplementation(libs.androidx.ui.tooling)
+    implementation(libs.androidx.ui.preview)
 }

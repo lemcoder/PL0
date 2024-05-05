@@ -4,7 +4,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import pl.lemanski.pandaloop.domain.model.visual.Component
-import pl.lemanski.pandaloop.presentation.visual.toImageVector
+import pl.lemanski.pandaloop.presentation.visual.icons.utils.toImageVector
 
 @Composable
 fun IconButtonComponent(

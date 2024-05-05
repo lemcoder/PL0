@@ -12,7 +12,7 @@ import pl.lemanski.pandaloop.domain.model.visual.Component
 import pl.lemanski.pandaloop.domain.navigation.Destination
 import pl.lemanski.pandaloop.domain.navigation.NavigationController
 import pl.lemanski.pandaloop.domain.platform.PermissionManager
-import pl.lemanski.pandaloop.getBufferSizeInBytesWithTempo
+import pl.lemanski.pandaloop.domain.utils.emptyBuffer
 
 class StartViewModel(
     private val permissionManager: PermissionManager,
@@ -73,7 +73,7 @@ class StartViewModel(
     override fun onCreateLoopClicked() {
         val tempo = _stateFlow.value.tempoPicker.tempo
         val timeSignature = TimeSignature.valueOf(_stateFlow.value.timeSignatureSelect.selected)
-        val emptyBuffer = ByteArray(timeSignature.getBufferSizeInBytesWithTempo(tempo).toInt())
+        val emptyBuffer = timeSignature.emptyBuffer(tempo)
 
         navigationController.goTo(
             Destination.LoopScreen(
