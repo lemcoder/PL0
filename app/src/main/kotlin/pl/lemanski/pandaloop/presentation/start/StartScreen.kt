@@ -40,11 +40,15 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.core.content.res.ResourcesCompat
 import kotlinx.coroutines.launch
+import pl.lemanski.pandaloop.R
 import pl.lemanski.pandaloop.domain.model.visual.Component
 import pl.lemanski.pandaloop.presentation.visual.components.utils.Composable
 import pl.lemanski.pandaloop.presentation.visual.theme.PandaTheme
@@ -70,7 +74,7 @@ fun StartScreen(
         Surface(
             modifier = Modifier
                 .clip(CircleShape)
-                .size(200.dp),
+                .size(160.dp),
             contentColor = MaterialTheme.colorScheme.onPrimary,
             color = MaterialTheme.colorScheme.primary,
             shadowElevation = 8.dp
@@ -132,6 +136,9 @@ fun TimeSignatureSelect(
     val animatedOffset = remember { Animatable(0f) }
     val coercedAnimatedOffset = animatedOffset.value % halvedNumbersColumnSizePx
     val animatedStateValue = animatedStateValue(animatedOffset.value)
+
+    val context = LocalContext.current
+    val fontFamily = remember { FontFamily(typeface = ResourcesCompat.getFont(context, R.font.bravura)!!) }
 
     Column(
         modifier = Modifier
@@ -204,7 +211,7 @@ fun TimeSignatureSelect(
                             modifier = Modifier
                                 .align(Alignment.Center)
                                 .offset(y = halvedNumbersColumnSize * (index + 1) * (-1)),
-                            style = MaterialTheme.typography.titleLarge,
+                            style = MaterialTheme.typography.titleLarge.copy(fontFamily = fontFamily),
                         )
                     }
 
@@ -212,7 +219,7 @@ fun TimeSignatureSelect(
                         text = textSelect.options.getOrNull((animatedStateValue + itemsSize) % itemsSize)
                             ?: "",
                         modifier = Modifier.align(Alignment.Center),
-                        style = MaterialTheme.typography.titleLarge,
+                        style = MaterialTheme.typography.titleLarge.copy(fontFamily = fontFamily),
                     )
 
                     repeat(2) { index ->
@@ -222,7 +229,7 @@ fun TimeSignatureSelect(
                             modifier = Modifier
                                 .align(Alignment.Center)
                                 .offset(y = halvedNumbersColumnSize * (index + 1)),
-                            style = MaterialTheme.typography.titleLarge,
+                            style = MaterialTheme.typography.titleLarge.copy(fontFamily = fontFamily),
                         )
                     }
                 }

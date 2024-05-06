@@ -13,26 +13,28 @@ import pl.lemanski.pandaloop.domain.navigation.Destination
 import pl.lemanski.pandaloop.domain.navigation.NavigationController
 import pl.lemanski.pandaloop.domain.platform.PermissionManager
 import pl.lemanski.pandaloop.domain.utils.emptyBuffer
+import pl.lemanski.pandaloop.domain.platform.i18n.Localization
 
 class StartViewModel(
     private val permissionManager: PermissionManager,
     private val navigationController: NavigationController,
+    private val localization: Localization
 ) : StartContract.ViewModel, ViewModel() {
     private val _stateFlow = MutableStateFlow(
         StartContract.State(
             tempoPicker = Component.TempoPicker(
-                label = "TODO pick tempo",
+                label = localization.tempo,
                 tempo = 60,
                 onTempoChanged = ::onTempoChanged
             ),
             timeSignatureSelect = Component.TextSelect(
-                label = "TODO select time signature",
-                options = TimeSignature.entries.map { it.name },
+                label = localization.timeSignature,
+                options = TimeSignature.entries.map { it.visualName },
                 selected = TimeSignature.COMMON.name,
                 onSelectedChanged = ::onTimeSignatureChanged
             ),
             createLoopButton = Component.Button(
-                text = "TODO create loop",
+                text = localization.loop.uppercase(),
                 onClick = ::onCreateLoopClicked
             )
         )
@@ -88,4 +90,10 @@ class StartViewModel(
             )
         )
     }
+
+    private val TimeSignature.visualName: String
+        get() = when (this) {
+            TimeSignature.COMMON      -> "\uE084\uE08E\uE084"
+            TimeSignature.THREE_FOURS -> "\uE083\uE08E\uE084"
+        }
 }

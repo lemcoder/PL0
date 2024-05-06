@@ -1,6 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Panda Loop</string>
-    <string name="time_signature">Time signature</string>
+    <string name="time_signature">Metrum</string>
     <string name="tempo">Tempo</string>
     <string name="loop">Loop</string>
 </resources>
