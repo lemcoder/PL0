@@ -9,4 +9,5 @@ enum class IconResource {
     TRASH_BIN,
     SPEAKER_PLAY,
     SPEAKER_MUTE,
+    EFFECTS,
 }

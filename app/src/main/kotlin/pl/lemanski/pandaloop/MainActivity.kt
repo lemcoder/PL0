@@ -22,6 +22,7 @@ import pl.lemanski.pandaloop.platform.PermissionManagerImpl
 import pl.lemanski.pandaloop.presentation.looper.LooperRouter
 import pl.lemanski.pandaloop.presentation.recording.RecordingRouter
 import pl.lemanski.pandaloop.presentation.start.StartRouter
+import pl.lemanski.pandaloop.presentation.visual.theme.PandaTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,35 +31,37 @@ class MainActivity : ComponentActivity() {
         initializeDependencies()
 
         setContent {
-            val navHostController = rememberNavController()
-            navHostController.enableOnBackPressed(false)
-            val navigationController = rememberNavigationController()
-            val navigationState by navigationController.navigationState.collectAsState()
+            PandaTheme {
+                val navHostController = rememberNavController()
+                navHostController.enableOnBackPressed(false)
+                val navigationController = rememberNavigationController()
+                val navigationState by navigationController.navigationState.collectAsState()
 
 
-            NavHost(
-                navController = navHostController,
-                startDestination = Destination.StartScreen::class.java.simpleName, // TODO get from navigation state (recomposition issues)
-            ) {
-                composable(Destination.StartScreen::class.java.simpleName) {
-                    StartRouter()
+                NavHost(
+                    navController = navHostController,
+                    startDestination = Destination.StartScreen::class.java.simpleName, // TODO get from navigation state (recomposition issues)
+                ) {
+                    composable(Destination.StartScreen::class.java.simpleName) {
+                        StartRouter()
+                    }
+
+                    composable(Destination.RecordingScreen::class.java.simpleName) {
+                        BackHandler { navigationController.goBack() }
+                        RecordingRouter()
+                    }
+
+                    composable(Destination.LoopScreen::class.java.simpleName) {
+                        BackHandler { navigationController.goBack() }
+                        LooperRouter()
+                    }
                 }
 
-                composable(Destination.RecordingScreen::class.java.simpleName) {
-                    BackHandler { navigationController.goBack() }
-                    RecordingRouter()
-                }
-
-                composable(Destination.LoopScreen::class.java.simpleName) {
-                    BackHandler { navigationController.goBack() }
-                    LooperRouter()
-                }
-            }
-
-            LaunchedEffect(navigationState.destination::class) {
-                when (navigationState.direction) {
-                    NavigationEvent.Direction.BACKWARD -> navHostController.popBackStack()
-                    NavigationEvent.Direction.FORWARD  -> navHostController.navigate(navigationState.destination::class.java.simpleName)
+                LaunchedEffect(navigationState.destination::class) {
+                    when (navigationState.direction) {
+                        NavigationEvent.Direction.BACKWARD -> navHostController.popBackStack()
+                        NavigationEvent.Direction.FORWARD  -> navHostController.navigate(navigationState.destination::class.java.simpleName)
+                    }
                 }
             }
         }

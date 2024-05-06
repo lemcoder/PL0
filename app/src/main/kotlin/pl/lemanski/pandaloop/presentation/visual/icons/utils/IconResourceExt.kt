@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.ui.graphics.vector.ImageVector
 import pl.lemanski.pandaloop.domain.model.visual.IconResource
+import pl.lemanski.pandaloop.presentation.visual.icons.IcEffects
 import pl.lemanski.pandaloop.presentation.visual.icons.IcPauseCircle
 import pl.lemanski.pandaloop.presentation.visual.icons.IcPlayCircle
 import pl.lemanski.pandaloop.presentation.visual.icons.IcRemove
@@ -21,4 +22,5 @@ fun IconResource.toImageVector(): ImageVector = when (this) {
     IconResource.TRASH_BIN    -> Icons.Default.Delete
     IconResource.SPEAKER_PLAY -> IcSpeakerPlay
     IconResource.SPEAKER_MUTE -> IcSpeakerMute
+    IconResource.EFFECTS      -> IcEffects
 }
