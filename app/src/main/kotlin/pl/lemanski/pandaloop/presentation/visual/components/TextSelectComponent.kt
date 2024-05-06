@@ -8,7 +8,6 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -16,7 +15,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import pl.lemanski.pandaloop.domain.model.visual.Component
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,7 +35,7 @@ fun TextSelectComponent(
             }
         ) {
             OutlinedTextField(
-                value = state.selected,
+                value = state.options.find { it.value == state.selected }?.label ?: "",
                 onValueChange = {},
                 readOnly = true,
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
@@ -50,9 +48,9 @@ fun TextSelectComponent(
             ) {
                 state.options.forEach { item ->
                     DropdownMenuItem(
-                        text = { Text(text = item) },
+                        text = { Text(text = item.label) },
                         onClick = {
-                            state.onSelectedChanged(item)
+                            state.onSelectedChanged(item.value)
                             expanded = false
                         }
                     )
@@ -60,19 +58,4 @@ fun TextSelectComponent(
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun TextSelectComponentPreview() {
-    var selected by remember { mutableStateOf("1") }
-
-    TextSelectComponent(
-        state = Component.TextSelect(
-            label = "Select",
-            selected = selected,
-            options = listOf("1", "2", "3"),
-            onSelectedChanged = { selected = it }
-        )
-    )
 }

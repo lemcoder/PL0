@@ -99,7 +99,7 @@ class LooperViewModel(
         if (mode != Mode.EDIT) return
 
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
+            withContext(Dispatchers.Default) {
                 tracks.forEach { (number, buffer) ->
                     loop.setTrack(number)
                     loop.mixBuffer(buffer)
@@ -110,7 +110,6 @@ class LooperViewModel(
                         tracks = tracks.toTrackCards()
                     )
                 }
-
             }
         }
     }

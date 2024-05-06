@@ -17,13 +17,11 @@ import pl.lemanski.pandaloop.domain.viewModel.start.StartViewModel
 fun StartRouter() {
     val factory = object : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            val permissionManager = DependencyResolver.resolve<PermissionManager>()
             val navigationController = DependencyResolver.resolve<NavigationController>()
             val localization = DependencyResolver.resolve<Localization>()
 
             @Suppress("UNCHECKED_CAST")
             return StartViewModel(
-                permissionManager = permissionManager,
                 navigationController = navigationController,
                 localization = localization
             ) as T

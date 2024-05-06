@@ -1,6 +1,5 @@
 package pl.lemanski.pandaloop.domain.navigation
 
-import android.graphics.Path.Direction
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

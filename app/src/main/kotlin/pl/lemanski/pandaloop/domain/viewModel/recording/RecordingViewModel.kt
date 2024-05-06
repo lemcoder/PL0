@@ -2,6 +2,7 @@ package pl.lemanski.pandaloop.domain.viewModel.recording
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,16 +12,21 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import pl.lemanski.pandaloop.Recording
 import pl.lemanski.pandaloop.domain.model.visual.Component
 import pl.lemanski.pandaloop.domain.model.visual.IconResource
 import pl.lemanski.pandaloop.domain.navigation.Destination
 import pl.lemanski.pandaloop.domain.navigation.NavigationController
+import pl.lemanski.pandaloop.domain.platform.PermissionManager
+import pl.lemanski.pandaloop.domain.platform.i18n.Localization
 import pl.lemanski.pandaloop.getTimeWithTempo
 
 class RecordingViewModel(
+    private val permissionManager: PermissionManager,
     private val navigationController: NavigationController,
-    private val key: Destination.RecordingScreen
+    private val key: Destination.RecordingScreen,
+    private val localization: Localization
 ) : RecordingContract.ViewModel, ViewModel() {
     private var recordingLock = Mutex()
 
@@ -38,17 +44,32 @@ class RecordingViewModel(
                 onClick = ::onRecordClick
             ),
             countdownSelect = Component.TextSelect(
-                label = "TODO label",
-                options = Countdown.entries.map { it.name },
+                label = localization.countdown,
+                options = Countdown.entries.map {
+                    Component.TextSelect.Option(
+                        label = it.visualName(it.count),
+                        value = it.count
+                    )
+                },
                 onSelectedChanged = ::onCountdownChanged,
-                selected = Countdown.FOUR.name
+                selected = Countdown.FOUR.count
             ),
             countdownScrim = RecordingContract.State.CountdownScrim(
                 visible = false,
-                text = ""
+                countdown = Countdown.FOUR.count,
+                currentCount = 0,
+                isRecording = false
             )
         )
     )
+
+    // TODO call initialize in router
+    override fun initialize() {
+        val permissionState = permissionManager.checkPermissionState(PermissionManager.Permission.RECORD_AUDIO)
+        if (permissionState != PermissionManager.PermissionState.GRANTED) {
+            navigationController.goBack()
+        }
+    }
 
     override val stateFlow: StateFlow<RecordingContract.State> = _stateFlow.asStateFlow()
 
@@ -56,36 +77,54 @@ class RecordingViewModel(
         if (recordingLock.isLocked) return@launch
 
         recordingLock.withLock {
-            val currentCountdown = Countdown.valueOf(_stateFlow.value.countdownSelect.selected).count
+            val countdown = Countdown.entries.find { it.count == _stateFlow.value.countdownSelect.selected }?.count ?: return@launch
             val recordingTime = key.timeSignature.getTimeWithTempo(key.tempo)
             val newRecording = Recording(recordingTime.toInt())
 
-            var countdown = currentCountdown
-            while (countdown > 0) {
+            var currentCountdown = countdown
+            while (currentCountdown > 0) {
                 _stateFlow.update { state ->
                     state.copy(
                         countdownScrim = state.countdownScrim.copy(
                             visible = true,
-                            text = "$countdown"
+                            countdown = countdown,
+                            currentCount = currentCountdown,
+                            isRecording = false
                         )
                     )
                 }
-                delay(recordingTime / currentCountdown)
-                countdown--
+                delay(recordingTime / countdown)
+                currentCountdown--
             }
 
-            _stateFlow.update { state ->
-                state.copy(
-                    countdownScrim = state.countdownScrim.copy(
-                        visible = true,
-                        text = "TODO recording..."
-                    )
-                )
+            val recordingJob = viewModelScope.launch {
+                withContext(Dispatchers.IO) {
+                    newRecording.start()
+                    delay(recordingTime + 200L) // Add some padding
+                    newRecording.stop()
+                }
             }
-            newRecording.start()
-            delay(recordingTime + 200L) // Add some padding
-            newRecording.stop()
 
+            viewModelScope.launch {
+                delay(200) // FIXME
+                currentCountdown = 1
+                while (currentCountdown <= countdown) {
+                    _stateFlow.update { state ->
+                        state.copy(
+                            countdownScrim = state.countdownScrim.copy(
+                                visible = true,
+                                currentCount = countdown,
+                                countdown = currentCountdown,
+                                isRecording = true
+                            )
+                        )
+                    }
+                    delay(recordingTime / countdown)
+                    currentCountdown++
+                }
+            }
+
+            recordingJob.join()
             val buffer = newRecording.recordedBuffer
             val looperKey = navigationController.keyOfType<Destination.LoopScreen>() ?: return@launch
             looperKey.tracks[key.trackNumber] = buffer
@@ -95,11 +134,18 @@ class RecordingViewModel(
         }
     }
 
-    override fun onCountdownChanged(count: String) {
+    override fun onCountdownChanged(count: Int) {
         _stateFlow.update { state ->
             state.copy(
-                countdownSelect = _stateFlow.value.countdownSelect.copy(selected = count)
+                countdownSelect = _stateFlow.value.countdownSelect.copy(selected = count),
+                countdownScrim = state.countdownScrim.copy(
+                    visible = false,
+                    isRecording = false,
+                    countdown = count
+                )
             )
         }
     }
+
+    private fun Countdown.visualName(quantity: Int): String = localization.measures(quantity)
 }

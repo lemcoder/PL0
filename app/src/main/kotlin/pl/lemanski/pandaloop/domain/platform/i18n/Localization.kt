@@ -4,4 +4,7 @@ interface Localization {
     val timeSignature: String
     val tempo: String
     val loop: String
+    val recording: String
+    val countdown: String
+    fun measures(beats: Int): String
 }

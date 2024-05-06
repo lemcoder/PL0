@@ -7,7 +7,7 @@ import pl.lemanski.pandaloop.domain.viewModel.PandaLoopViewModel
 interface RecordingContract {
     interface ViewModel : PandaLoopViewModel<State> {
         fun onRecordClick(): Job
-        fun onCountdownChanged(count: String)
+        fun onCountdownChanged(count: Int)
     }
 
     data class State(
@@ -17,7 +17,9 @@ interface RecordingContract {
     ) {
         data class CountdownScrim(
             val visible: Boolean,
-            val text: String
+            val currentCount: Int,
+            val countdown: Int,
+            val isRecording: Boolean
         )
     }
 }

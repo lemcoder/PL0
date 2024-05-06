@@ -12,7 +12,14 @@ interface StartContract {
 
     data class State(
         val tempoPicker: Component.TempoPicker,
-        val timeSignatureSelect: Component.TextSelect,
+        val timeSignatureSelect: TimeSignatureSelect,
         val createLoopButton: Component.Button
-    )
+    ) {
+        data class TimeSignatureSelect(
+            val label: String,
+            val options: List<String>,
+            val selected: String,
+            val onSelectedChanged: (String) -> Unit
+        )
+    }
 }

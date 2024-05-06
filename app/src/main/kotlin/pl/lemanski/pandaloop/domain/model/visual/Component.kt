@@ -19,8 +19,13 @@ sealed interface Component {
 
     data class TextSelect(
         val label: String,
-        val selected: String,
-        val onSelectedChanged: (String) -> Unit,
-        val options: List<String>,
-    ) : Component
+        val selected: Int,
+        val onSelectedChanged: (Int) -> Unit,
+        val options: List<Option>,
+    ) : Component {
+        data class Option(
+            val label: String,
+            val value: Int
+        )
+    }
 }

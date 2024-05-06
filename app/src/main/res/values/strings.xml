@@ -3,4 +3,11 @@
     <string name="time_signature">Time signature</string>
     <string name="tempo">Tempo</string>
     <string name="loop">Loop</string>
+    <string name="recording">Recording</string>
+    <string name="record">Record</string>
+    <string name="countdown">Countdown</string>
+    <plurals name="measures">
+        <item quantity="one">%d measure</item>
+        <item quantity="other">%d measures</item>
+    </plurals>
 </resources>

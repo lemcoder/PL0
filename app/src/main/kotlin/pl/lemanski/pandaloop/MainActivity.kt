@@ -41,7 +41,6 @@ class MainActivity : ComponentActivity() {
                     val navigationController = rememberNavigationController()
                     val navigationState by navigationController.navigationState.collectAsState()
 
-
                     NavHost(
                         navController = navHostController,
                         startDestination = Destination.StartScreen::class.java.simpleName, // TODO get from navigation state (recomposition issues)
@@ -62,9 +61,13 @@ class MainActivity : ComponentActivity() {
                     }
 
                     LaunchedEffect(navigationState.destination::class) {
+                        if (navHostController.currentDestination?.route == navigationState.destination.javaClass.simpleName) {
+                            return@LaunchedEffect
+                        }
+
                         when (navigationState.direction) {
                             NavigationEvent.Direction.BACKWARD -> navHostController.popBackStack()
-                            NavigationEvent.Direction.FORWARD  -> navHostController.navigate(navigationState.destination::class.java.simpleName)
+                            NavigationEvent.Direction.FORWARD  -> navHostController.navigate(navigationState.destination.javaClass.simpleName)
                         }
                     }
                 }
