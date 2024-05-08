@@ -10,14 +10,17 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import pl.lemanski.pandaloop.Loop
-import pl.lemanski.pandaloop.TimeSignature
-import pl.lemanski.pandaloop.domain.model.TrackNumber
+import pl.lemanski.pandaloop.core.Loop
+import pl.lemanski.pandaloop.core.TimeSignature
 import pl.lemanski.pandaloop.domain.model.visual.Component
 import pl.lemanski.pandaloop.domain.model.visual.IconResource
 import pl.lemanski.pandaloop.domain.navigation.Destination
 import pl.lemanski.pandaloop.domain.navigation.NavigationController
 import pl.lemanski.pandaloop.domain.utils.emptyBuffer
+import pl.lemanski.pandaloop.dsp.LowPassFilter
+import pl.lemanski.pandaloop.dsp.Mixer
+import pl.lemanski.pandaloop.dsp.utils.toByteArray
+import pl.lemanski.pandaloop.dsp.utils.toFloatArray
 
 class LooperViewModel(
     private val navigationController: NavigationController,
@@ -27,7 +30,7 @@ class LooperViewModel(
     private var mode: Mode = Mode.EDIT
     private val timeSignature: TimeSignature = key.timeSignature
     private val tempo: Int = key.tempo
-    private val tracks: MutableMap<TrackNumber, ByteArray> = key.tracks
+    private val tracks: MutableMap<Int, ByteArray> = key.tracks
     private val emptyBuffer: ByteArray = timeSignature.emptyBuffer(tempo)
 
     private val _stateFlow = MutableStateFlow(
@@ -70,7 +73,7 @@ class LooperViewModel(
         }
     }
 
-    override fun onTrackRemoveClick(trackNumber: TrackNumber) {
+    override fun onTrackRemoveClick(trackNumber: Int) {
         if (mode != Mode.EDIT) return
 
         tracks[trackNumber] = emptyBuffer
@@ -83,7 +86,7 @@ class LooperViewModel(
         }
     }
 
-    override fun onTrackRecordClick(trackNumber: TrackNumber) {
+    override fun onTrackRecordClick(trackNumber: Int) {
         if (mode != Mode.EDIT) return
 
         navigationController.goTo(
@@ -100,10 +103,17 @@ class LooperViewModel(
 
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
+                var outputBuffer = FloatArray(emptyBuffer.size / 4)
                 tracks.forEach { (number, buffer) ->
-                    loop.setTrack(number)
-                    loop.mixBuffer(buffer)
+                    if (number == 0) {
+                        val filteredBuffer = LowPassFilter(500, buffer.toFloatArray()).apply()
+                        outputBuffer = Mixer().mixPcmFramesF32(filteredBuffer.copyOfRange(0, outputBuffer.size), outputBuffer, 1f)
+                    } else {
+                        outputBuffer = Mixer().mixPcmFramesF32(buffer.toFloatArray(), outputBuffer, 1f)
+                    }
                 }
+
+                loop.setBuffer(buffer = outputBuffer.toByteArray())
 
                 _stateFlow.update { state ->
                     state.copy(

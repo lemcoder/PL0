@@ -1,19 +1,19 @@
 package pl.lemanski.pandaloop.domain.navigation
 
-import pl.lemanski.pandaloop.TimeSignature
-import pl.lemanski.pandaloop.domain.model.TrackNumber
+import pl.lemanski.pandaloop.core.TimeSignature
+
 
 sealed interface Destination {
     data object StartScreen : Destination
 
     data class RecordingScreen(
-        val trackNumber: TrackNumber,
+        val trackNumber: Int,
         val tempo: Int,
         val timeSignature: TimeSignature
     ) : Destination
 
     data class LoopScreen(
-        var tracks: MutableMap<TrackNumber, ByteArray>,
+        var tracks: MutableMap<Int, ByteArray>,
         val tempo: Int,
         val timeSignature: TimeSignature
     ) : Destination

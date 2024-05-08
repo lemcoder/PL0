@@ -13,14 +13,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import pl.lemanski.pandaloop.Recording
+import pl.lemanski.pandaloop.core.Recording
+import pl.lemanski.pandaloop.core.getTimeWithTempo
 import pl.lemanski.pandaloop.domain.model.visual.Component
 import pl.lemanski.pandaloop.domain.model.visual.IconResource
 import pl.lemanski.pandaloop.domain.navigation.Destination
 import pl.lemanski.pandaloop.domain.navigation.NavigationController
 import pl.lemanski.pandaloop.domain.platform.PermissionManager
 import pl.lemanski.pandaloop.domain.platform.i18n.Localization
-import pl.lemanski.pandaloop.getTimeWithTempo
 
 class RecordingViewModel(
     private val permissionManager: PermissionManager,
@@ -63,7 +63,6 @@ class RecordingViewModel(
         )
     )
 
-    // TODO call initialize in router
     override fun initialize() {
         val permissionState = permissionManager.checkPermissionState(PermissionManager.Permission.RECORD_AUDIO)
         if (permissionState != PermissionManager.PermissionState.GRANTED) {

@@ -1,15 +1,13 @@
 package pl.lemanski.pandaloop.domain.viewModel.looper
 
-import kotlinx.coroutines.Job
-import pl.lemanski.pandaloop.domain.model.TrackNumber
 import pl.lemanski.pandaloop.domain.model.visual.Component
 import pl.lemanski.pandaloop.domain.viewModel.PandaLoopViewModel
 
 interface LooperContract {
     interface ViewModel : PandaLoopViewModel<State> {
         fun onPlaybackClick()
-        fun onTrackRemoveClick(trackNumber: TrackNumber)
-        fun onTrackRecordClick(trackNumber: TrackNumber)
+        fun onTrackRemoveClick(trackNumber: Int)
+        fun onTrackRecordClick(trackNumber: Int)
     }
 
     data class State(

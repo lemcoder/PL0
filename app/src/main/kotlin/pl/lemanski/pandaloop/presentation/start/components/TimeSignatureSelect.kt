@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.res.ResourcesCompat
 import kotlinx.coroutines.launch
 import pl.lemanski.pandaloop.R
-import pl.lemanski.pandaloop.TimeSignature
+import pl.lemanski.pandaloop.core.TimeSignature
 import pl.lemanski.pandaloop.domain.viewModel.start.StartContract
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -196,7 +196,7 @@ private fun rememberFadingEdgeGradient() = remember {
 
 private val String.visualName: String
     get() = when (this) {
-        TimeSignature.COMMON.name -> "\uE084\uE08E\uE084"
+        TimeSignature.COMMON.name      -> "\uE084\uE08E\uE084"
         TimeSignature.THREE_FOURS.name -> "\uE083\uE08E\uE084"
-        else -> ""
+        else                           -> ""
     }

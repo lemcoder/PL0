@@ -1,6 +1,7 @@
 package pl.lemanski.pandaloop.presentation.recording
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
@@ -41,4 +42,8 @@ fun RecordingRouter() {
         countdownSelect = state.countdownSelect,
         countdownScrim = state.countdownScrim
     )
+
+    LaunchedEffect(Unit) {
+        viewModel.initialize()
+    }
 }
