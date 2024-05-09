@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import pl.lemanski.pandaloop.core.TimeSignature
 import pl.lemanski.pandaloop.domain.model.visual.Component
 import pl.lemanski.pandaloop.domain.viewModel.start.StartContract
 import pl.lemanski.pandaloop.presentation.start.components.TimeSignatureSelect
@@ -90,7 +91,7 @@ fun StartScreenPreview() {
     var selected by remember { mutableStateOf("") }
 
     PandaTheme(
-        darkTheme = false
+        darkTheme = true
     ) {
         Surface {
             StartScreen(
@@ -104,8 +105,8 @@ fun StartScreenPreview() {
                     selected = selected,
                     onSelectedChanged = { selected = it },
                     options = listOf(
-                        "4/4",
-                        "3/4"
+                        TimeSignature.COMMON.name,
+                        TimeSignature.THREE_FOURS.name
                     )
                 ),
                 createLoopButton = Component.Button(

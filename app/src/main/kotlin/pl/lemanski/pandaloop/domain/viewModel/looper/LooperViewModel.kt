@@ -17,7 +17,6 @@ import pl.lemanski.pandaloop.domain.model.visual.IconResource
 import pl.lemanski.pandaloop.domain.navigation.Destination
 import pl.lemanski.pandaloop.domain.navigation.NavigationController
 import pl.lemanski.pandaloop.domain.utils.emptyBuffer
-import pl.lemanski.pandaloop.dsp.LowPassFilter
 import pl.lemanski.pandaloop.dsp.Mixer
 import pl.lemanski.pandaloop.dsp.utils.toByteArray
 import pl.lemanski.pandaloop.dsp.utils.toFloatArray
@@ -105,12 +104,7 @@ class LooperViewModel(
             withContext(Dispatchers.Default) {
                 var outputBuffer = FloatArray(emptyBuffer.size / 4)
                 tracks.forEach { (number, buffer) ->
-                    if (number == 0) {
-                        val filteredBuffer = LowPassFilter(500, buffer.toFloatArray()).apply()
-                        outputBuffer = Mixer().mixPcmFramesF32(filteredBuffer.copyOfRange(0, outputBuffer.size), outputBuffer, 1f)
-                    } else {
-                        outputBuffer = Mixer().mixPcmFramesF32(buffer.toFloatArray(), outputBuffer, 1f)
-                    }
+                    outputBuffer = Mixer().mixPcmFramesF32(buffer.toFloatArray(), outputBuffer, 1f)
                 }
 
                 loop.setBuffer(buffer = outputBuffer.toByteArray())
@@ -129,10 +123,10 @@ class LooperViewModel(
             LooperContract.State.TrackCard(
                 id = number,
                 name = "${number + 1}",
-                timestamp = 0, // TODO
                 isEmpty = buffer.contentEquals(emptyBuffer),
                 onRemoveClick = ::onTrackRemoveClick,
                 onRecordClick = ::onTrackRecordClick,
+                onEffectClick = {} // TODO
             )
         }
     }

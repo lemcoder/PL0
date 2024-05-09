@@ -20,9 +20,9 @@ interface LooperContract {
             val id: Int,
             val name: String,
             val isEmpty: Boolean,
-            val timestamp: Long,
             val onRemoveClick: (Int) -> Unit,
             val onRecordClick: (Int) -> Unit,
+            val onEffectClick: (Int) -> Unit
         )
     }
 }
