@@ -38,8 +38,6 @@ fun RecordingRouter() {
     val state by viewModel.stateFlow.collectAsState()
 
     RecordingScreen(
-        recordButton = state.recordButton,
-        countdownSelect = state.countdownSelect,
         countdownScrim = state.countdownScrim
     )
 

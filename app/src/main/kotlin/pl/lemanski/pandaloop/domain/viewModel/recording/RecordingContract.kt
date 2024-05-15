@@ -6,13 +6,10 @@ import pl.lemanski.pandaloop.domain.viewModel.PandaLoopViewModel
 
 interface RecordingContract {
     interface ViewModel : PandaLoopViewModel<State> {
-        fun onRecordClick(): Job
-        fun onCountdownChanged(count: Int)
+        fun record(): Job
     }
 
     data class State(
-        val recordButton: Component.IconButton,
-        val countdownSelect: Component.TextSelect,
         val countdownScrim: CountdownScrim
     ) {
         data class CountdownScrim(

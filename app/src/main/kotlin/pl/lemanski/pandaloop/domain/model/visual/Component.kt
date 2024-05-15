@@ -28,4 +28,10 @@ sealed interface Component {
             val value: Int
         )
     }
+
+    data class MeasuresPicker(
+        val label: String,
+        val measures: Int,
+        val onMeasuresChanged: (Int) -> Unit
+    ) : Component
 }

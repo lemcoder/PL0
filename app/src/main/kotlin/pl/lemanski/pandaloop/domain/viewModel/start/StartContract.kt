@@ -7,13 +7,15 @@ interface StartContract {
     interface ViewModel : PandaLoopViewModel<State> {
         fun onTempoChanged(tempo: Int)
         fun onTimeSignatureChanged(timeSignature: String)
+        fun onMeasuresChanged(measures: Int)
         fun onCreateLoopClicked()
     }
 
     data class State(
         val tempoPicker: Component.TempoPicker,
         val timeSignatureSelect: TimeSignatureSelect,
-        val createLoopButton: Component.Button
+        val createLoopButton: Component.Button,
+        val measuresPicker: Component.MeasuresPicker
     ) {
         data class TimeSignatureSelect(
             val label: String,

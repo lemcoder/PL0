@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -21,7 +22,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.RoundRect
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import pl.lemanski.pandaloop.core.TimeSignature
 import pl.lemanski.pandaloop.domain.model.visual.Component
@@ -34,7 +43,8 @@ import pl.lemanski.pandaloop.presentation.visual.theme.PandaTheme
 fun StartScreen(
     tempoPicker: Component.TempoPicker,
     timeSignatureSelect: StartContract.State.TimeSignatureSelect,
-    createLoopButton: Component.Button
+    createLoopButton: Component.Button,
+    measuresPicker: Component.MeasuresPicker
 ) {
     Column(
         modifier = Modifier
@@ -48,13 +58,34 @@ fun StartScreen(
     ) {
         Surface(
             modifier = Modifier
-                .clip(CircleShape)
+                .clip(RoundedCornerShape(16.dp))
                 .size(160.dp),
             contentColor = MaterialTheme.colorScheme.onPrimary,
             color = MaterialTheme.colorScheme.primary,
             shadowElevation = 8.dp
         ) {
             TimeSignatureSelect(timeSignatureSelect)
+        }
+
+
+
+        Surface(
+            modifier = Modifier
+                .size(width = 160.dp, height = 120.dp)
+                .border(1.dp, MaterialTheme.colorScheme.primary, BookmarkShape),
+            contentColor = MaterialTheme.colorScheme.primary,
+            color = MaterialTheme.colorScheme.surface,
+            shadowElevation = 0.dp
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(0.dp) // margin
+                    .padding(top = 16.dp),
+                contentAlignment = Alignment.TopCenter,
+            ) {
+                measuresPicker.Composable()
+            }
         }
 
         Surface(
@@ -74,13 +105,45 @@ fun StartScreen(
             }
         }
 
-
         Button(
             onClick = createLoopButton.onClick,
-            modifier = Modifier.size(100.dp)
+            modifier = Modifier.size(100.dp),
         ) {
             Text(text = createLoopButton.text)
         }
+    }
+}
+
+object BookmarkShape : Shape {
+    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
+        val width = size.width
+        val height = size.height
+
+        val path = Path().apply {
+            // Top rounded rectangle
+            addRoundRect(
+                RoundRect(
+                    rect = androidx.compose.ui.geometry.Rect(0f, 0f, width, height),
+                    topLeft = CornerRadius(48f, 48f),
+                    topRight = CornerRadius(48f, 48f),
+                    bottomLeft = CornerRadius(0f, 0f),
+                    bottomRight = CornerRadius(0f, 0f)
+                )
+            )
+
+            moveTo(0f, height)
+            quadraticBezierTo(
+                width / 2,
+                height * 0.5f,
+                width,
+                height
+            )
+            lineTo(width, height)
+            lineTo(0f, height)
+            close()
+        }
+
+        return Outline.Generic(path)
     }
 }
 
@@ -112,6 +175,11 @@ fun StartScreenPreview() {
                 createLoopButton = Component.Button(
                     text = "LOOP",
                     onClick = {}
+                ),
+                measuresPicker = Component.MeasuresPicker(
+                    label = "Measures",
+                    measures = 4,
+                    onMeasuresChanged = {}
                 )
             )
         }

@@ -6,8 +6,5 @@
     <string name="recording">Recording</string>
     <string name="record">Record</string>
     <string name="countdown">Countdown</string>
-    <plurals name="measures">
-        <item quantity="one">%d measure</item>
-        <item quantity="other">%d measures</item>
-    </plurals>
+    <string name="measures">Measures</string>
 </resources>

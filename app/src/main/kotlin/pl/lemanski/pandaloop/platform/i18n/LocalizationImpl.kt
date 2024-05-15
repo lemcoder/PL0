@@ -12,6 +12,6 @@ class LocalizationImpl(
     override val loop: String = context.getString(R.string.loop)
     override val recording: String = context.getString(R.string.recording)
     override val countdown: String = context.getString(R.string.countdown)
-    override fun measures(beats: Int): String = context.resources.getQuantityString(R.plurals.measures, beats)
+    override val measures: String = context.getString(R.string.measures)
 
 }

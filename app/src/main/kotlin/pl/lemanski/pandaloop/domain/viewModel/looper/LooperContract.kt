@@ -8,6 +8,7 @@ interface LooperContract {
         fun onPlaybackClick()
         fun onTrackRemoveClick(trackNumber: Int)
         fun onTrackRecordClick(trackNumber: Int)
+        fun onEffectsRackClick(trackNumber: Int)
     }
 
     data class State(

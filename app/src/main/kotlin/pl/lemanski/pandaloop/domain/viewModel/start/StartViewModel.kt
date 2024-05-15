@@ -32,6 +32,11 @@ class StartViewModel(
             createLoopButton = Component.Button(
                 text = localization.loop.uppercase(),
                 onClick = ::onCreateLoopClicked
+            ),
+            measuresPicker = Component.MeasuresPicker(
+                label = localization.measures,
+                measures = 1,
+                onMeasuresChanged = ::onMeasuresChanged
             )
         )
     )
@@ -57,11 +62,24 @@ class StartViewModel(
         }
     }
 
+    override fun onMeasuresChanged(measures: Int) {
+        if (measures > 4 || measures < 1) return
+
+        _stateFlow.update { state ->
+            state.copy(
+                measuresPicker = _stateFlow.value.measuresPicker.copy(
+                    measures = measures
+                )
+            )
+        }
+    }
+
     override fun onCreateLoopClicked() {
         val tempo = _stateFlow.value.tempoPicker.tempo
         val timeSignature = TimeSignature.valueOf(_stateFlow.value.timeSignatureSelect.selected)
+        val measures = _stateFlow.value.measuresPicker.measures
+        val emptyBuffer = timeSignature.emptyBuffer(tempo, measures)
 
-        val emptyBuffer = timeSignature.emptyBuffer(tempo)
         navigationController.goTo(
             Destination.LoopScreen(
                 tracks = mutableMapOf(
@@ -71,7 +89,8 @@ class StartViewModel(
                     3 to emptyBuffer,
                 ),
                 tempo = tempo,
-                timeSignature = timeSignature
+                timeSignature = timeSignature,
+                measures = measures
             )
         )
     }

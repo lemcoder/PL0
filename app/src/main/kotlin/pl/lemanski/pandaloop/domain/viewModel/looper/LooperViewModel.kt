@@ -1,6 +1,5 @@
 package pl.lemanski.pandaloop.domain.viewModel.looper
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -9,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
 import pl.lemanski.pandaloop.core.Loop
 import pl.lemanski.pandaloop.core.TimeSignature
@@ -17,6 +17,7 @@ import pl.lemanski.pandaloop.domain.model.visual.IconResource
 import pl.lemanski.pandaloop.domain.navigation.Destination
 import pl.lemanski.pandaloop.domain.navigation.NavigationController
 import pl.lemanski.pandaloop.domain.utils.emptyBuffer
+import pl.lemanski.pandaloop.dsp.LowPassFilter
 import pl.lemanski.pandaloop.dsp.Mixer
 import pl.lemanski.pandaloop.dsp.utils.toByteArray
 import pl.lemanski.pandaloop.dsp.utils.toFloatArray
@@ -26,11 +27,12 @@ class LooperViewModel(
     private val key: Destination.LoopScreen,
     private val loop: Loop = Loop()
 ) : ViewModel(), LooperContract.ViewModel {
-    private var mode: Mode = Mode.EDIT
     private val timeSignature: TimeSignature = key.timeSignature
     private val tempo: Int = key.tempo
+    private val measures: Int = key.measures
     private val tracks: MutableMap<Int, ByteArray> = key.tracks
-    private val emptyBuffer: ByteArray = timeSignature.emptyBuffer(tempo)
+    private val emptyBuffer: ByteArray = timeSignature.emptyBuffer(tempo, measures)
+    private val busyLock: Mutex = Mutex(false)
 
     private val _stateFlow = MutableStateFlow(
         LooperContract.State(
@@ -51,9 +53,11 @@ class LooperViewModel(
     }
 
     override fun onPlaybackClick() {
-        if (mode == Mode.PLAYBACK) {
+        val isPlayback = _stateFlow.value.playbackButton.icon == IconResource.PAUSE_BARS // TODO better check
+
+        if (isPlayback) {
             loop.stop()
-            mode = Mode.EDIT
+            busyLock.unlock()
             _stateFlow.update { state ->
                 state.copy(
                     playbackButton = state.playbackButton.copy(icon = IconResource.PLAY_ARROW)
@@ -61,9 +65,8 @@ class LooperViewModel(
             }
 
         } else {
-            Log.e("LooperViewModel", "${tracks.map { it.value.size.toString() }}")
+            busyLock.tryLock()
             loop.play()
-            mode = Mode.PLAYBACK
             _stateFlow.update { state ->
                 state.copy(
                     playbackButton = state.playbackButton.copy(icon = IconResource.PAUSE_BARS)
@@ -73,7 +76,7 @@ class LooperViewModel(
     }
 
     override fun onTrackRemoveClick(trackNumber: Int) {
-        if (mode != Mode.EDIT) return
+        if (busyLock.isLocked) return
 
         tracks[trackNumber] = emptyBuffer
         mixTracks()
@@ -86,23 +89,25 @@ class LooperViewModel(
     }
 
     override fun onTrackRecordClick(trackNumber: Int) {
-        if (mode != Mode.EDIT) return
+        if (busyLock.isLocked) return
 
         navigationController.goTo(
             Destination.RecordingScreen(
                 trackNumber = trackNumber,
                 tempo = tempo,
-                timeSignature = timeSignature
+                timeSignature = timeSignature,
+                measures = measures
             )
         )
     }
 
     private fun mixTracks() {
-        if (mode != Mode.EDIT) return
+        if (busyLock.isLocked) return
 
         viewModelScope.launch {
+            busyLock.lock()
             withContext(Dispatchers.Default) {
-                var outputBuffer = FloatArray(emptyBuffer.size / 4)
+                var outputBuffer = FloatArray((emptyBuffer.size.toFloat() / 4f).toInt().coerceAtLeast(0))
                 tracks.forEach { (number, buffer) ->
                     outputBuffer = Mixer().mixPcmFramesF32(buffer.toFloatArray(), outputBuffer, 1f)
                 }
@@ -115,7 +120,12 @@ class LooperViewModel(
                     )
                 }
             }
+            busyLock.unlock()
         }
+    }
+
+    override fun onEffectsRackClick(trackNumber: Int) {
+        tracks[trackNumber] = LowPassFilter(8_000, tracks[trackNumber]!!.toFloatArray()).apply().toByteArray()
     }
 
     private fun MutableMap<Int, ByteArray>.toTrackCards(): List<LooperContract.State.TrackCard> {
@@ -126,7 +136,7 @@ class LooperViewModel(
                 isEmpty = buffer.contentEquals(emptyBuffer),
                 onRemoveClick = ::onTrackRemoveClick,
                 onRecordClick = ::onTrackRecordClick,
-                onEffectClick = {} // TODO
+                onEffectClick = ::onEffectsRackClick
             )
         }
     }
@@ -134,10 +144,5 @@ class LooperViewModel(
     override fun onCleared() {
         super.onCleared()
         loop.close()
-    }
-
-    internal enum class Mode {
-        PLAYBACK,
-        EDIT
     }
 }

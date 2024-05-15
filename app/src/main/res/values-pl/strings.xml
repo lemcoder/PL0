@@ -7,10 +7,5 @@
     <string name="recording">Nagrywanie</string>
     <string name="record">Nagrywaj</string>
     <string name="countdown">Odliczanie</string>
-    <plurals name="measures">
-        <item quantity="one">%d takt</item>
-        <item quantity="many">%d taktów</item>
-        <item quantity="few">%d takty</item>
-        <item quantity="other">%d takty</item>
-    </plurals>
+    <string name="measures">Takty</string>
 </resources>

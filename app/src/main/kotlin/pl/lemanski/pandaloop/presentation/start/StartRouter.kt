@@ -34,6 +34,7 @@ fun StartRouter() {
     StartScreen(
         tempoPicker = state.tempoPicker,
         timeSignatureSelect = state.timeSignatureSelect,
-        createLoopButton = state.createLoopButton
+        createLoopButton = state.createLoopButton,
+        measuresPicker = state.measuresPicker
     )
 }

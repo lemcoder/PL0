@@ -6,5 +6,5 @@ interface Localization {
     val loop: String
     val recording: String
     val countdown: String
-    fun measures(beats: Int): String
+    val measures: String
 }

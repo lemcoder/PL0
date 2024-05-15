@@ -9,12 +9,14 @@ sealed interface Destination {
     data class RecordingScreen(
         val trackNumber: Int,
         val tempo: Int,
-        val timeSignature: TimeSignature
+        val timeSignature: TimeSignature,
+        val measures: Int,
     ) : Destination
 
     data class LoopScreen(
         var tracks: MutableMap<Int, ByteArray>,
         val tempo: Int,
-        val timeSignature: TimeSignature
+        val timeSignature: TimeSignature,
+        val measures: Int,
     ) : Destination
 }
