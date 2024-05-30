@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.config.LanguageVersion
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.compose.compiler)
 }
 
 kotlin {
@@ -30,6 +31,8 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
     }
 
@@ -37,20 +40,18 @@ android {
         compose = true
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.composeCompilerExt.get()
+    composeCompiler {
+        enableStrongSkippingMode = true
+        enableNonSkippingGroupOptimization = true
+        stabilityConfigurationFile = file("compose-stability")
     }
 }
 
 dependencies {
-    implementation(libs.pandaloop.core)
-    implementation(libs.coroutines.core)
-
-    implementation(libs.androidx.lifecycle.viewmodel)
+    implementation(projects.domain)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     implementation(libs.navigation.compose)
-    runtimeOnly(libs.coroutines.android)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)

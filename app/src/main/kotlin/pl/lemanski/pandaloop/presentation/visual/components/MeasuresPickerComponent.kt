@@ -25,6 +25,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import pl.lemanski.pandaloop.domain.model.visual.Component
+import pl.lemanski.pandaloop.domain.model.visual.IconResource
 import pl.lemanski.pandaloop.presentation.visual.icons.utils.toImageVector
 
 @Composable
@@ -61,7 +62,7 @@ fun MeasuresPickerComponent(
                     )
             ) {
                 Icon(
-                    imageVector = pl.lemanski.pandaloop.domain.model.visual.IconResource.MINUS_SIGN.toImageVector(),
+                    imageVector = IconResource.MINUS_SIGN.toImageVector(),
                     contentDescription = "Minus sign"
                 )
             }
@@ -86,7 +87,7 @@ fun MeasuresPickerComponent(
                     )
             ) {
                 Icon(
-                    imageVector = pl.lemanski.pandaloop.domain.model.visual.IconResource.PLUS_SIGN.toImageVector(),
+                    imageVector = IconResource.PLUS_SIGN.toImageVector(),
                     contentDescription = "Plus sign"
                 )
             }

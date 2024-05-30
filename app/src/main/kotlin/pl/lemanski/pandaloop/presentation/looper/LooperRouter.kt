@@ -8,21 +8,22 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import pl.lemanski.pandaloop.domain.di.DependencyResolver
-import pl.lemanski.pandaloop.domain.exceptions.NavigationStateException
-import pl.lemanski.pandaloop.domain.navigation.Destination
-import pl.lemanski.pandaloop.domain.navigation.NavigationController
+import pl.lemanski.pandaloop.domain.model.exceptions.NavigationStateException
+import pl.lemanski.pandaloop.domain.model.navigation.Destination
+import pl.lemanski.pandaloop.domain.service.navigation.NavigationService
+import pl.lemanski.pandaloop.domain.service.navigation.key
 import pl.lemanski.pandaloop.domain.viewModel.looper.LooperViewModel
 
 @Composable
 fun LooperRouter() {
     val factory = object : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            val navigationController = DependencyResolver.resolve<NavigationController>()
-            val key = navigationController.keyOfType<Destination.LoopScreen>() ?: throw NavigationStateException()
+            val navigationService = DependencyResolver.resolve<NavigationService>()
+            val key = navigationService.key<Destination.LoopScreen>() ?: throw NavigationStateException("Key not found: ${Destination.LoopScreen::class}")
 
             @Suppress("UNCHECKED_CAST")
             return LooperViewModel(
-                navigationController = navigationController,
+                navigationService = navigationService,
                 key = key,
             ) as T
         }
@@ -33,8 +34,7 @@ fun LooperRouter() {
 
     LooperScreen(
         playbackButton = state.playbackButton,
-        tempo = state.tempo,
-        timeSignature = state.timeSignature,
+        recordButton = state.recordButton,
         trackCards = state.tracks
     )
 

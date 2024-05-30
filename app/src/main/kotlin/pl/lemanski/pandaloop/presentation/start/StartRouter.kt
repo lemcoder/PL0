@@ -3,32 +3,18 @@ package pl.lemanski.pandaloop.presentation.start
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import pl.lemanski.pandaloop.domain.di.DependencyResolver
-import pl.lemanski.pandaloop.domain.navigation.NavigationController
-import pl.lemanski.pandaloop.domain.platform.PermissionManager
+import pl.lemanski.pandaloop.domain.service.navigation.NavigationService
 import pl.lemanski.pandaloop.domain.platform.i18n.Localization
 import pl.lemanski.pandaloop.domain.viewModel.start.StartViewModel
 
 @Composable
 fun StartRouter() {
-    val factory = object : ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            val navigationController = DependencyResolver.resolve<NavigationController>()
-            val localization = DependencyResolver.resolve<Localization>()
-
-            @Suppress("UNCHECKED_CAST")
-            return StartViewModel(
-                navigationController = navigationController,
-                localization = localization
-            ) as T
-        }
-    }
-
-    val viewModel: StartViewModel = viewModel(factory = factory)
+    val viewModel: StartViewModel = viewModel(factory = rememberViewModelFactory())
     val state by viewModel.stateFlow.collectAsState()
 
     StartScreen(
@@ -37,4 +23,20 @@ fun StartRouter() {
         createLoopButton = state.createLoopButton,
         measuresPicker = state.measuresPicker
     )
+}
+
+@Composable
+private fun rememberViewModelFactory(): ViewModelProvider.Factory = remember {
+    object : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            val navigationService = pl.lemanski.pandaloop.domain.di.DependencyResolver.resolve<NavigationService>()
+            val localization = pl.lemanski.pandaloop.domain.di.DependencyResolver.resolve<Localization>()
+
+            @Suppress("UNCHECKED_CAST")
+            return StartViewModel(
+                navigationService = navigationService,
+                localization = localization
+            ) as T
+        }
+    }
 }

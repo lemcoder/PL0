@@ -1,14 +1,15 @@
 package pl.lemanski.pandaloop.presentation.looper.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -32,6 +33,7 @@ fun TrackCard(
 ) {
     Surface(
         shape = RoundedCornerShape(50.dp),
+        modifier = Modifier.height(100.dp),
         tonalElevation = 4.dp,
         shadowElevation = 4.dp,
     ) {
@@ -48,42 +50,18 @@ fun TrackCard(
             }
 
             Surface(
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.inverseSurface),
+                color = MaterialTheme.colorScheme.surface,
                 shape = RoundedCornerShape(50.dp),
-                modifier = Modifier.size(80.dp),
-                onClick = { state.onRecordClick(state.id) }
+                modifier = Modifier.size(100.dp),
+                onClick = { state.onRemoveClick(state.id) }
             ) {
-                IconButton(onClick = { }) {
+                Box(
+                    contentAlignment = Alignment.Center
+                ) {
                     Icon(
-                        imageVector = IconResource.EFFECTS.toImageVector(),
+                        imageVector = IconResource.TRASH_BIN.toImageVector(),
                         contentDescription = "trash bin"
                     )
-                }
-            }
-
-            Surface(
-                color = MaterialTheme.colorScheme.inverseSurface,
-                shape = RoundedCornerShape(50.dp),
-                modifier = Modifier.size(100.dp)
-            ) {
-                when (state.isEmpty) {
-                    true -> {
-                        IconButton(onClick = { state.onRecordClick(state.id) }) {
-                            Icon(
-                                imageVector = IconResource.PLUS_SIGN.toImageVector(),
-                                contentDescription = "trash bin",
-                                modifier = Modifier.size(30.dp)
-                            )
-                        }
-                    }
-                    false -> {
-                        IconButton(onClick = { state.onRemoveClick(state.id) }) {
-                            Icon(
-                                imageVector = IconResource.TRASH_BIN.toImageVector(),
-                                contentDescription = "trash bin"
-                            )
-                        }
-                    }
                 }
             }
         }
@@ -100,10 +78,7 @@ fun PreviewTrackCard() {
             state = LooperContract.State.TrackCard(
                 id = 1,
                 name = "Track 1",
-                isEmpty = isEmpty,
                 onRemoveClick = { isEmpty = true },
-                onRecordClick = { isEmpty = false },
-                onEffectClick = { }
             )
         )
     }

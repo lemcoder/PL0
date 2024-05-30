@@ -32,12 +32,12 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.core.content.res.ResourcesCompat
 import kotlinx.coroutines.launch
 import pl.lemanski.pandaloop.R
-import pl.lemanski.pandaloop.core.TimeSignature
 import pl.lemanski.pandaloop.domain.viewModel.start.StartContract
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -83,6 +83,8 @@ fun TimeSignatureSelect(
         Text(
             text = textSelect.label,
             style = MaterialTheme.typography.labelMedium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
 
         Column(
@@ -129,8 +131,7 @@ fun TimeSignatureSelect(
                 ) {
                     repeat(2) { index ->
                         Text(
-                            text = textSelect.options.getOrNull((animatedStateValue - (index + 1) + itemsSize) % itemsSize)?.visualName
-                                ?: "",
+                            text = textSelect.options.getOrNull((animatedStateValue - (index + 1) + itemsSize) % itemsSize)?.visualName ?: "",
                             modifier = Modifier
                                 .align(Alignment.Center)
                                 .offset(y = halvedNumbersColumnSize * (index + 1) * (-1)),
@@ -139,16 +140,14 @@ fun TimeSignatureSelect(
                     }
 
                     Text(
-                        text = textSelect.options.getOrNull((animatedStateValue + itemsSize) % itemsSize)?.visualName
-                            ?: "",
+                        text = textSelect.options.getOrNull((animatedStateValue + itemsSize) % itemsSize)?.visualName ?: "",
                         modifier = Modifier.align(Alignment.Center),
                         style = MaterialTheme.typography.titleLarge.copy(fontFamily = fontFamily),
                     )
 
                     repeat(2) { index ->
                         Text(
-                            text = textSelect.options.getOrNull((animatedStateValue + (index + 1) + itemsSize) % itemsSize)?.visualName
-                                ?: "",
+                            text = textSelect.options.getOrNull((animatedStateValue + (index + 1) + itemsSize) % itemsSize)?.visualName ?: "",
                             modifier = Modifier
                                 .align(Alignment.Center)
                                 .offset(y = halvedNumbersColumnSize * (index + 1)),
@@ -194,9 +193,10 @@ private fun rememberFadingEdgeGradient() = remember {
     )
 }
 
+// FIXME hardcoded values
 private val String.visualName: String
     get() = when (this) {
-        TimeSignature.COMMON.name      -> "\uE084\uE08E\uE084"
-        TimeSignature.THREE_FOURS.name -> "\uE083\uE08E\uE084"
-        else                           -> ""
+        "COMMON"      -> "\uE084\uE08E\uE084"
+        "THREE_FOURS" -> "\uE083\uE08E\uE084"
+        else          -> ""
     }

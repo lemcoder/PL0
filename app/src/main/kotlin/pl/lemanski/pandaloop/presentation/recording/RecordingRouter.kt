@@ -8,11 +8,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import pl.lemanski.pandaloop.domain.di.DependencyResolver
-import pl.lemanski.pandaloop.domain.exceptions.NavigationStateException
-import pl.lemanski.pandaloop.domain.navigation.Destination
-import pl.lemanski.pandaloop.domain.navigation.NavigationController
-import pl.lemanski.pandaloop.domain.platform.PermissionManager
-import pl.lemanski.pandaloop.domain.platform.i18n.Localization
+import pl.lemanski.pandaloop.domain.model.exceptions.NavigationStateException
+import pl.lemanski.pandaloop.domain.model.navigation.Destination
+import pl.lemanski.pandaloop.domain.platform.permission.PermissionManager
+import pl.lemanski.pandaloop.domain.service.navigation.NavigationService
+import pl.lemanski.pandaloop.domain.service.navigation.key
 import pl.lemanski.pandaloop.domain.viewModel.recording.RecordingViewModel
 
 @Composable
@@ -20,16 +20,14 @@ fun RecordingRouter() {
     val factory = object : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             val permissionManager = DependencyResolver.resolve<PermissionManager>()
-            val navigationController = DependencyResolver.resolve<NavigationController>()
-            val recordingNavigationKey = navigationController.keyOfType<Destination.RecordingScreen>() ?: throw NavigationStateException()
-            val localization = DependencyResolver.resolve<Localization>()
+            val navigationService = DependencyResolver.resolve<NavigationService>()
+            val recordingNavigationKey = navigationService.key<Destination.RecordingScreen>() ?: throw NavigationStateException("Navigation key is null")
 
             @Suppress("UNCHECKED_CAST")
             return RecordingViewModel(
                 permissionManager = permissionManager,
-                navigationController = navigationController,
+                navigationService = navigationService,
                 key = recordingNavigationKey,
-                localization = localization
             ) as T
         }
     }
@@ -38,7 +36,8 @@ fun RecordingRouter() {
     val state by viewModel.stateFlow.collectAsState()
 
     RecordingScreen(
-        countdownScrim = state.countdownScrim
+        countdown = state.countdown,
+        metronome = state.metronome
     )
 
     LaunchedEffect(Unit) {

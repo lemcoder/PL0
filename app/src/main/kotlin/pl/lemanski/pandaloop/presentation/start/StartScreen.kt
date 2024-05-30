@@ -1,9 +1,7 @@
 package pl.lemanski.pandaloop.presentation.start
 
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -22,20 +20,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.RoundRect
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Outline
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import pl.lemanski.pandaloop.core.TimeSignature
 import pl.lemanski.pandaloop.domain.model.visual.Component
 import pl.lemanski.pandaloop.domain.viewModel.start.StartContract
 import pl.lemanski.pandaloop.presentation.start.components.TimeSignatureSelect
+import pl.lemanski.pandaloop.presentation.visual.components.AdaptiveLinearLayout
 import pl.lemanski.pandaloop.presentation.visual.components.utils.Composable
 import pl.lemanski.pandaloop.presentation.visual.theme.PandaTheme
 
@@ -46,20 +36,15 @@ fun StartScreen(
     createLoopButton: Component.Button,
     measuresPicker: Component.MeasuresPicker
 ) {
-    Column(
+    AdaptiveLinearLayout(
         modifier = Modifier
             .fillMaxSize()
             .padding(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(
-            space = 16.dp,
-            alignment = Alignment.CenterVertically
-        )
     ) {
         Surface(
             modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))
-                .size(160.dp),
+                .size(180.dp),
             contentColor = MaterialTheme.colorScheme.onPrimary,
             color = MaterialTheme.colorScheme.primary,
             shadowElevation = 8.dp
@@ -71,18 +56,15 @@ fun StartScreen(
 
         Surface(
             modifier = Modifier
-                .size(width = 160.dp, height = 120.dp)
-                .border(1.dp, MaterialTheme.colorScheme.primary, BookmarkShape),
+                .size(width = 180.dp, height = 100.dp)
+                .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp)),
             contentColor = MaterialTheme.colorScheme.primary,
             color = MaterialTheme.colorScheme.surface,
             shadowElevation = 0.dp
         ) {
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(0.dp) // margin
-                    .padding(top = 16.dp),
-                contentAlignment = Alignment.TopCenter,
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
             ) {
                 measuresPicker.Composable()
             }
@@ -107,47 +89,14 @@ fun StartScreen(
 
         Button(
             onClick = createLoopButton.onClick,
-            modifier = Modifier.size(100.dp),
+            modifier = Modifier.size(120.dp),
         ) {
             Text(text = createLoopButton.text)
         }
     }
 }
 
-object BookmarkShape : Shape {
-    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
-        val width = size.width
-        val height = size.height
-
-        val path = Path().apply {
-            // Top rounded rectangle
-            addRoundRect(
-                RoundRect(
-                    rect = androidx.compose.ui.geometry.Rect(0f, 0f, width, height),
-                    topLeft = CornerRadius(48f, 48f),
-                    topRight = CornerRadius(48f, 48f),
-                    bottomLeft = CornerRadius(0f, 0f),
-                    bottomRight = CornerRadius(0f, 0f)
-                )
-            )
-
-            moveTo(0f, height)
-            quadraticBezierTo(
-                width / 2,
-                height * 0.5f,
-                width,
-                height
-            )
-            lineTo(width, height)
-            lineTo(0f, height)
-            close()
-        }
-
-        return Outline.Generic(path)
-    }
-}
-
-@Preview
+@Preview(device = "spec:parent=pixel_5,orientation=landscape")
 @Composable
 fun StartScreenPreview() {
     var tempo by remember { mutableIntStateOf(0) }
@@ -168,8 +117,8 @@ fun StartScreenPreview() {
                     selected = selected,
                     onSelectedChanged = { selected = it },
                     options = listOf(
-                        TimeSignature.COMMON.name,
-                        TimeSignature.THREE_FOURS.name
+                        "4/4",
+                        "3/4"
                     )
                 ),
                 createLoopButton = Component.Button(

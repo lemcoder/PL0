@@ -15,11 +15,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import pl.lemanski.pandaloop.domain.di.DependencyResolver
 import pl.lemanski.pandaloop.domain.di.SingletonDependencyProvider
-import pl.lemanski.pandaloop.domain.navigation.Destination
-import pl.lemanski.pandaloop.domain.navigation.NavigationController
-import pl.lemanski.pandaloop.domain.navigation.NavigationEvent
-import pl.lemanski.pandaloop.domain.platform.PermissionManager
+import pl.lemanski.pandaloop.domain.model.navigation.Destination
+import pl.lemanski.pandaloop.domain.model.navigation.NavigationEvent
 import pl.lemanski.pandaloop.domain.platform.i18n.Localization
+import pl.lemanski.pandaloop.domain.platform.permission.PermissionManager
+import pl.lemanski.pandaloop.domain.service.navigation.NavigationService
+import pl.lemanski.pandaloop.domain.service.navigation.NavigationServiceImpl
+import pl.lemanski.pandaloop.domain.service.navigation.back
 import pl.lemanski.pandaloop.platform.PermissionManagerImpl
 import pl.lemanski.pandaloop.platform.i18n.LocalizationImpl
 import pl.lemanski.pandaloop.presentation.looper.LooperRouter
@@ -50,12 +52,12 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable(Destination.RecordingScreen::class.java.simpleName) {
-                            BackHandler { navigationController.goBack() }
+                            BackHandler { navigationController.back() }
                             RecordingRouter()
                         }
 
                         composable(Destination.LoopScreen::class.java.simpleName) {
-                            BackHandler { navigationController.goBack() }
+                            BackHandler { navigationController.back() }
                             LooperRouter()
                         }
                     }
@@ -77,17 +79,16 @@ class MainActivity : ComponentActivity() {
 
     private fun initializeDependencies() {
         DependencyResolver.addProviders {
-            // TODO use map or something
             listOf(
                 SingletonDependencyProvider<PermissionManager>(PermissionManagerImpl(this@MainActivity)),
-                SingletonDependencyProvider(NavigationController()),
+                SingletonDependencyProvider<NavigationService>(NavigationServiceImpl()),
                 SingletonDependencyProvider<Localization>(LocalizationImpl(this@MainActivity))
             )
         }
     }
 
     @Composable
-    private fun rememberNavigationController(): NavigationController = remember {
-        DependencyResolver.resolve<NavigationController>()
+    private fun rememberNavigationController(): NavigationService = remember {
+        DependencyResolver.resolve<NavigationService>()
     }
 }
