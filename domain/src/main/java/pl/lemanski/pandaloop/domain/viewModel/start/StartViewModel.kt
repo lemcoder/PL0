@@ -9,13 +9,18 @@ import pl.lemanski.pandaloop.core.TimeSignature
 import pl.lemanski.pandaloop.domain.model.navigation.Destination
 import pl.lemanski.pandaloop.domain.model.visual.Component
 import pl.lemanski.pandaloop.domain.platform.i18n.Localization
+import pl.lemanski.pandaloop.domain.platform.log.Logger
+import pl.lemanski.pandaloop.domain.repository.loop.LoopContext
 import pl.lemanski.pandaloop.domain.service.navigation.NavigationService
 import pl.lemanski.pandaloop.domain.service.navigation.goTo
+import pl.lemanski.pandaloop.domain.utils.Debounce
 
 class StartViewModel(
     private val navigationService: NavigationService,
     private val localization: Localization
 ) : StartContract.ViewModel, ViewModel() {
+    private val logger = Logger.get(this::class)
+    private val debouncedOnCreateButtonClick = Debounce(::onCreateLoopClicked)
     private val _stateFlow = MutableStateFlow(
         StartContract.State(
             tempoPicker = Component.TempoPicker(
@@ -31,7 +36,7 @@ class StartViewModel(
             ),
             createLoopButton = Component.Button(
                 text = localization.loop.uppercase(),
-                onClick = ::onCreateLoopClicked
+                onClick = { debouncedOnCreateButtonClick(1_000) }
             ),
             measuresPicker = Component.MeasuresPicker(
                 label = localization.measures,
@@ -41,9 +46,15 @@ class StartViewModel(
         )
     )
 
+    init {
+        logger.i { "Initialized" }
+    }
+
     override val stateFlow: StateFlow<StartContract.State> = _stateFlow.asStateFlow()
 
     override fun onTempoChanged(tempo: Int) {
+        if (tempo !in 30..180) return
+
         _stateFlow.update { state ->
             state.copy(
                 tempoPicker = _stateFlow.value.tempoPicker.copy(
@@ -63,7 +74,7 @@ class StartViewModel(
     }
 
     override fun onMeasuresChanged(measures: Int) {
-        if (measures > 32 || measures < 1) return
+        if (measures !in 1..32) return
 
         _stateFlow.update { state ->
             state.copy(
@@ -81,9 +92,11 @@ class StartViewModel(
 
         navigationService.goTo(
             Destination.LoopScreen(
-                tempo = tempo,
-                timeSignature = timeSignature,
-                measures = measures
+                loopContext = LoopContext(
+                    tempo = tempo,
+                    timeSignature = timeSignature,
+                    measures = measures
+                ),
             )
         )
     }

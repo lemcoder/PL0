@@ -13,21 +13,18 @@ import pl.lemanski.pandaloop.domain.model.track.Track
 import pl.lemanski.pandaloop.domain.model.visual.Component
 import pl.lemanski.pandaloop.domain.model.visual.IconResource
 import pl.lemanski.pandaloop.domain.platform.log.Logger
-import pl.lemanski.pandaloop.domain.repository.loop.LoopContext
 import pl.lemanski.pandaloop.domain.repository.loop.LoopContextStateHolder
 import pl.lemanski.pandaloop.domain.service.navigation.NavigationService
 import pl.lemanski.pandaloop.domain.service.navigation.goTo
+import pl.lemanski.pandaloop.domain.utils.Debounce
 
 class LooperViewModel(
     private val navigationService: NavigationService,
     private val key: Destination.LoopScreen,
-    private val loopContext: LoopContext = LoopContext(
-        timeSignature = key.timeSignature,
-        tempo = key.tempo,
-        measures = key.measures
-    )
 ) : ViewModel(), LooperContract.ViewModel {
+    private val loopContext = key.loopContext
     private val logger = Logger.get(this::class)
+    private val debouncedOnRecordButtonClick = Debounce(::onRecordClick)
     private val _stateFlow = MutableStateFlow(
         LooperContract.State(
             playbackButton = Component.IconButton(
@@ -36,18 +33,18 @@ class LooperViewModel(
             ),
             recordButton = Component.IconButton(
                 icon = IconResource.PLUS_SIGN,
-                onClick = ::onRecordClick
+                onClick = { debouncedOnRecordButtonClick(1_000) }
             ),
             tracks = listOf(),
         )
     )
     override val stateFlow: StateFlow<LooperContract.State> = _stateFlow.asStateFlow()
 
-    override fun initialize() {
+    fun initialize() {
         logger.i { "Initialize" }
-        _stateFlow.update {
-            it.copy(
-                tracks = loopContext.tracks.toTrackCards()
+        _stateFlow.update { state ->
+            state.copy(
+                tracks = loopContext.tracks.toTrackCards(),
             )
         }
     }
@@ -56,27 +53,17 @@ class LooperViewModel(
         logger.i { "Playback clicked" }
 
         if (loopContext.currentState.isPlaying()) {
-            loopContext.stop()
-            _stateFlow.update { state ->
-                state.copy(
-                    playbackButton = state.playbackButton.copy(
-                        icon = IconResource.PLAY_ARROW
-                    )
-                )
-            }
+            pausePlayback()
         } else {
-            loopContext.playback()
-            _stateFlow.update { state ->
-                state.copy(
-                    playbackButton = state.playbackButton.copy(
-                        icon = IconResource.PAUSE_BARS
-                    )
-                )
-            }
+            startPlayback()
         }
     }
 
     override fun onTrackRemoveClick(trackNumber: Int) = viewModelScope.launch {
+        if (loopContext.currentState.isPlaying()) {
+            pausePlayback()
+        }
+
         loopContext.setTrack(trackNumber, null)
 
         _stateFlow.update { state ->
@@ -106,6 +93,28 @@ class LooperViewModel(
             name = track.name,
             onRemoveClick = ::onTrackRemoveClick,
         )
+    }
+
+    private fun pausePlayback() {
+        loopContext.pause()
+        _stateFlow.update { state ->
+            state.copy(
+                playbackButton = state.playbackButton.copy(
+                    icon = IconResource.PLAY_ARROW
+                )
+            )
+        }
+    }
+
+    private fun startPlayback() {
+        loopContext.playback()
+        _stateFlow.update { state ->
+            state.copy(
+                playbackButton = state.playbackButton.copy(
+                    icon = IconResource.PAUSE_BARS
+                )
+            )
+        }
     }
 
     private fun LoopContextStateHolder.State.isPlaying() = this == LoopContextStateHolder.State.PLAY

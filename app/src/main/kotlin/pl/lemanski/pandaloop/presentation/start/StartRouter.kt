@@ -8,8 +8,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import pl.lemanski.pandaloop.domain.di.DependencyResolver
-import pl.lemanski.pandaloop.domain.service.navigation.NavigationService
 import pl.lemanski.pandaloop.domain.platform.i18n.Localization
+import pl.lemanski.pandaloop.domain.service.navigation.NavigationService
 import pl.lemanski.pandaloop.domain.viewModel.start.StartViewModel
 
 @Composable
@@ -29,8 +29,8 @@ fun StartRouter() {
 private fun rememberViewModelFactory(): ViewModelProvider.Factory = remember {
     object : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            val navigationService = pl.lemanski.pandaloop.domain.di.DependencyResolver.resolve<NavigationService>()
-            val localization = pl.lemanski.pandaloop.domain.di.DependencyResolver.resolve<Localization>()
+            val navigationService = DependencyResolver.resolve<NavigationService>()
+            val localization = DependencyResolver.resolve<Localization>()
 
             @Suppress("UNCHECKED_CAST")
             return StartViewModel(

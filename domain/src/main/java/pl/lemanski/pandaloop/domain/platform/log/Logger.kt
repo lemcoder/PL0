@@ -7,7 +7,8 @@ import kotlin.reflect.KClass
 open class Logger private constructor(private val tag: String) {
     companion object {
         fun get(kClass: KClass<*>): Logger {
-            return Logger(kClass::simpleName.name)
+            val name: String = kClass.simpleName ?: kClass.java.name
+            return Logger(name)
         }
     }
 

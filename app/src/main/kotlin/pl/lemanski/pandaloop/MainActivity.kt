@@ -1,15 +1,19 @@
 package pl.lemanski.pandaloop
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -45,7 +49,11 @@ class MainActivity : ComponentActivity() {
 
                     NavHost(
                         navController = navHostController,
-                        startDestination = Destination.StartScreen::class.java.simpleName, // TODO get from navigation state (recomposition issues)
+                        startDestination = Destination.StartScreen::class.java.simpleName,
+                        enterTransition = { EnterTransition.None },
+                        exitTransition = { ExitTransition.None },
+                        popEnterTransition = { EnterTransition.None },
+                        popExitTransition = { ExitTransition.None },
                     ) {
                         composable(Destination.StartScreen::class.java.simpleName) {
                             StartRouter()
@@ -82,7 +90,8 @@ class MainActivity : ComponentActivity() {
             listOf(
                 SingletonDependencyProvider<PermissionManager>(PermissionManagerImpl(this@MainActivity)),
                 SingletonDependencyProvider<NavigationService>(NavigationServiceImpl()),
-                SingletonDependencyProvider<Localization>(LocalizationImpl(this@MainActivity))
+                SingletonDependencyProvider<Localization>(LocalizationImpl(this@MainActivity)),
+                SingletonDependencyProvider<Context>(this@MainActivity.applicationContext)
             )
         }
     }
