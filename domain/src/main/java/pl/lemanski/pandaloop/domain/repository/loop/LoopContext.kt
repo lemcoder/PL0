@@ -77,6 +77,7 @@ class LoopContext(
 
         continuation.invokeOnCancellation {
             recordingJob.cancel()
+            loopCoordinator.stopRecording(0)
             logger.i { "Recording cancelled" }
             loopContextStateHolder.tryUpdateState(LoopContextStateHolder.State.IDLE)
             logger.d { "Loop context state: ${loopContextStateHolder.state}" }

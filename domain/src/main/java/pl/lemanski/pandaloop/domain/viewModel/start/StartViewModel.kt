@@ -74,7 +74,7 @@ class StartViewModel(
     }
 
     override fun onMeasuresChanged(measures: Int) {
-        if (measures !in 1..32) return
+        if (measures !in 1..16) return
 
         _stateFlow.update { state ->
             state.copy(

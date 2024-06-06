@@ -96,7 +96,7 @@ fun StartScreen(
     }
 }
 
-@Preview(device = "spec:parent=pixel_5,orientation=landscape")
+@Preview(device = "spec:parent=3.3in WQVGA, orientation=landscape")
 @Composable
 fun StartScreenPreview() {
     var tempo by remember { mutableIntStateOf(0) }

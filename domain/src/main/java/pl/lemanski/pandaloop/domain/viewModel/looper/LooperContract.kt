@@ -13,8 +13,8 @@ interface LooperContract {
 
     data class State(
         val tracks: List<TrackCard>,
-        val playbackButton: Component.IconButton,
-        val recordButton: Component.IconButton
+        val playbackButton: Component.IconButton?,
+        val recordButton: Component.IconButton?
     ) {
         data class TrackCard(
             val id: Int,

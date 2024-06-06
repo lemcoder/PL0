@@ -1,9 +1,12 @@
 package pl.lemanski.pandaloop.presentation.visual.components
 
 import android.content.res.Configuration
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,7 +22,7 @@ fun AdaptiveLinearLayout(
 
     if (configuration.orientation != Configuration.ORIENTATION_LANDSCAPE) {
         Column(
-            modifier = modifier,
+            modifier = modifier.verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(
                 space = 16.dp,
@@ -31,7 +34,7 @@ fun AdaptiveLinearLayout(
 
     } else {
         Row(
-            modifier = modifier,
+            modifier = modifier.horizontalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.spacedBy(
                 space = 16.dp,
                 alignment = Alignment.CenterHorizontally

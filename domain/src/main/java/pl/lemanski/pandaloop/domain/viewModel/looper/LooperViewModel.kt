@@ -27,14 +27,8 @@ class LooperViewModel(
     private val debouncedOnRecordButtonClick = Debounce(::onRecordClick)
     private val _stateFlow = MutableStateFlow(
         LooperContract.State(
-            playbackButton = Component.IconButton(
-                icon = IconResource.PLAY_ARROW,
-                onClick = ::onPlaybackClick
-            ),
-            recordButton = Component.IconButton(
-                icon = IconResource.PLUS_SIGN,
-                onClick = { debouncedOnRecordButtonClick(1_000) }
-            ),
+            playbackButton = null,
+            recordButton = null,
             tracks = listOf(),
         )
     )
@@ -42,11 +36,7 @@ class LooperViewModel(
 
     fun initialize() {
         logger.i { "Initialize" }
-        _stateFlow.update { state ->
-            state.copy(
-                tracks = loopContext.tracks.toTrackCards(),
-            )
-        }
+        updateTracksState()
     }
 
     override fun onPlaybackClick(): Job = viewModelScope.launch {
@@ -66,14 +56,18 @@ class LooperViewModel(
 
         loopContext.setTrack(trackNumber, null)
 
-        _stateFlow.update { state ->
-            state.copy(
-                tracks = loopContext.tracks.toTrackCards()
-            )
-        }
+        updateTracksState()
     }
 
     override fun onRecordClick() {
+        if (loopContext.currentState.isPlaying()) {
+            pausePlayback()
+        }
+
+        if (loopContext.tracks.size >= 4) {
+            return
+        }
+
         navigationService.goTo(
             destination = Destination.RecordingScreen(
                 loopContext = loopContext,
@@ -99,7 +93,7 @@ class LooperViewModel(
         loopContext.pause()
         _stateFlow.update { state ->
             state.copy(
-                playbackButton = state.playbackButton.copy(
+                playbackButton = state.playbackButton?.copy(
                     icon = IconResource.PLAY_ARROW
                 )
             )
@@ -110,9 +104,25 @@ class LooperViewModel(
         loopContext.playback()
         _stateFlow.update { state ->
             state.copy(
-                playbackButton = state.playbackButton.copy(
+                playbackButton = state.playbackButton?.copy(
                     icon = IconResource.PAUSE_BARS
                 )
+            )
+        }
+    }
+
+    internal fun updateTracksState() {
+        _stateFlow.update { state ->
+            state.copy(
+                tracks = loopContext.tracks.toTrackCards(),
+                recordButton = Component.IconButton(
+                    icon = IconResource.PLUS_SIGN,
+                    onClick = { debouncedOnRecordButtonClick(1_000) }
+                ).takeIf { loopContext.tracks.size < 4 },
+                playbackButton = Component.IconButton(
+                    icon = IconResource.PLAY_ARROW,
+                    onClick = ::onPlaybackClick
+                ).takeIf { loopContext.tracks.isNotEmpty() }
             )
         }
     }
