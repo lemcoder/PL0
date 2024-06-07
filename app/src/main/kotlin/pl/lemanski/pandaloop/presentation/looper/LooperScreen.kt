@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -61,7 +62,8 @@ fun LooperScreen(
 
             Row(
                 modifier = Modifier
-                    .padding(bottom = 16.dp),
+                    .padding(bottom = 16.dp)
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(
                     space = 16.dp,
                     alignment = Alignment.CenterHorizontally
@@ -114,7 +116,7 @@ fun LooperScreen(
     }
 }
 
-@Preview(device = "spec:parent=pixel_8,orientation=landscape")
+@Preview(device = "spec:parent=pixel_8")
 @Composable
 fun LooperScreenPreview() {
     PandaTheme(darkTheme = true) {
@@ -129,17 +131,17 @@ fun LooperScreenPreview() {
                 ),
                 LooperContract.State.TrackCard(
                     id = 1,
-                    name = "Track 1",
+                    name = "Track 2",
                     onRemoveClick = {},
                 ),
                 LooperContract.State.TrackCard(
                     id = 1,
-                    name = "Track 1",
+                    name = "Track 3",
                     onRemoveClick = {},
                 ),
                 LooperContract.State.TrackCard(
                     id = 1,
-                    name = "Track 1",
+                    name = "Track 4",
                     onRemoveClick = {},
                 ),
 

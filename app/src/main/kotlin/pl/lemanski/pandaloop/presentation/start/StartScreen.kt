@@ -96,7 +96,7 @@ fun StartScreen(
     }
 }
 
-@Preview(device = "spec:parent=3.3in WQVGA, orientation=landscape")
+@Preview(device = "id:pixel_c")
 @Composable
 fun StartScreenPreview() {
     var tempo by remember { mutableIntStateOf(0) }
@@ -117,8 +117,8 @@ fun StartScreenPreview() {
                     selected = selected,
                     onSelectedChanged = { selected = it },
                     options = listOf(
-                        "4/4",
-                        "3/4"
+                        "COMMON",
+                        "THREE_FOURS"
                     )
                 ),
                 createLoopButton = Component.Button(
