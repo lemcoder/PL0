@@ -2,6 +2,7 @@ package pl.lemanski.pandaloop.domain.repository.loop
 
 import io.mockk.mockk
 import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -61,7 +62,7 @@ class LoopContextTest {
     @Test
     fun should_update_state_to_MIX_and_back_to_IDLE_on_completion() = runTest {
         val loopContext = loopContext()
-        loopContext.setTrack(0, Track("Track 1", byteArrayOf(), listOf()))
+        loopContext.setTrack(0, null)
         assertEquals(LoopContextStateHolder.State.IDLE, loopContext.currentState)
     }
 

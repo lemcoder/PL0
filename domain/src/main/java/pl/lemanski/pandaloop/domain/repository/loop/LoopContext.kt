@@ -114,29 +114,28 @@ class LoopContext(
             throw InvalidStateException("Cannot mix when playback or recording is active")
         }
 
+        logger.i { "setTrack called with params: track: ${track?.name}, volume: $volume" }
+        loopContextStateHolder.tryUpdateState(LoopContextStateHolder.State.MIX)
+        logger.d { "Loop context state: ${loopContextStateHolder.state}" }
+
         if (track == null) {
             _tracks.remove(id)
             playbackBuffer = loopCoordinator.emptyBuffer(timeSignature, tempo, measures)
             _tracks.values.forEach { mixTrack(it, volume) } // Mix all remaining tracks when removing
-            return
+        } else {
+            _tracks[id] = track
+            mixTrack(track, volume) // Mix only new track when adding
         }
 
-        _tracks[id] = track
-        mixTrack(track, volume) // Mix only new track when adding
+        loopContextStateHolder.tryUpdateState(LoopContextStateHolder.State.IDLE)
     }
 
     private fun mixTrack(track: Track, volume: Float) {
-        logger.i { "mixTrack called with params: track: ${track.name}, volume: $volume" }
-        loopContextStateHolder.tryUpdateState(LoopContextStateHolder.State.MIX)
-        logger.d { "Loop context state: ${loopContextStateHolder.state}" }
-
         try {
             playbackBuffer = mixer.mixPcmFramesF32(track.data.toFloatArray(), playbackBuffer.toFloatArray(), volume).toByteArray()
             loopCoordinator.setPlaybackBuffer(playbackBuffer)
         } catch (ex: Exception) {
             logger.e { "Mixing failed with exception: ${ex.message}" }
-        } finally {
-            loopContextStateHolder.tryUpdateState(LoopContextStateHolder.State.IDLE)
         }
     }
 
