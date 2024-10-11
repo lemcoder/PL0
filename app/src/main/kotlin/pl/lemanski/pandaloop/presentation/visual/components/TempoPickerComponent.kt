@@ -21,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -72,7 +73,7 @@ fun TempoPickerComponent(
                     .size(ButtonDefaults.MinHeight)
                     .combinedClickable(
                         interactionSource = remember { MutableInteractionSource() },
-                        indication = rememberRipple(),
+                        indication = ripple(),
                         role = Role.Button,
                         onLongClick = { state.onTempoChanged(state.tempo - 1) },
                         onClick = { state.onTempoChanged(state.tempo - 5) }
@@ -98,7 +99,7 @@ fun TempoPickerComponent(
                     .size(ButtonDefaults.MinHeight)
                     .combinedClickable(
                         interactionSource = remember { MutableInteractionSource() },
-                        indication = rememberRipple(),
+                        indication = ripple(),
                         role = Role.Button,
                         onLongClick = { state.onTempoChanged(state.tempo + 1) },
                         onClick = { state.onTempoChanged(state.tempo + 5) }

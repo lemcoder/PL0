@@ -9,10 +9,10 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Test
-import pl.lemanski.pandaloop.core.AudioEngine
-import pl.lemanski.pandaloop.core.PandaLoop
-import pl.lemanski.pandaloop.core.TimeSignature
+import pl.lemanski.mikroaudio.AudioEngine
+import pl.lemanski.mikroaudio.MikroAudio
 import pl.lemanski.pandaloop.domain.model.exceptions.InvalidStateException
+import pl.lemanski.pandaloop.domain.model.timeSignature.TimeSignature
 import pl.lemanski.pandaloop.domain.model.track.Track
 
 class LoopContextTest {
@@ -23,7 +23,7 @@ class LoopContextTest {
         measures = 1,
         timeSignature = TimeSignature.COMMON,
         tempo = 60,
-        loopCoordinator = PandaLoop(mockEngine),
+        loopCoordinator = MikroAudio(mockEngine),
     )
 
     @Test

@@ -8,12 +8,6 @@ plugins {
 
 kotlin {
     jvmToolchain(17)
-
-    sourceSets.all {
-        languageSettings {
-            languageVersion = LanguageVersion.KOTLIN_2_0.versionString
-        }
-    }
 }
 
 android {
@@ -32,6 +26,7 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
 

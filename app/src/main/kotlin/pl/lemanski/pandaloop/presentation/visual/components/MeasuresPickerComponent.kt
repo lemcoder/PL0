@@ -17,6 +17,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -56,7 +57,7 @@ fun MeasuresPickerComponent(
                     .size(ButtonDefaults.MinHeight)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
-                        indication = rememberRipple(),
+                        indication = ripple(),
                         role = Role.Button,
                         onClick = { state.onMeasuresChanged(state.measures - 1) }
                     )
@@ -81,7 +82,7 @@ fun MeasuresPickerComponent(
                     .size(ButtonDefaults.MinHeight)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
-                        indication = rememberRipple(),
+                        indication = ripple(),
                         role = Role.Button,
                         onClick = { state.onMeasuresChanged(state.measures + 1) }
                     )

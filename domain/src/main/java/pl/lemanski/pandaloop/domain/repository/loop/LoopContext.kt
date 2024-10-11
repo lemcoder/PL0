@@ -9,18 +9,18 @@ import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
-import pl.lemanski.pandaloop.core.PandaLoop
-import pl.lemanski.pandaloop.core.TimeSignature
-import pl.lemanski.pandaloop.core.internal.Closeable
-import pl.lemanski.pandaloop.core.utils.emptyBuffer
-import pl.lemanski.pandaloop.core.utils.getBufferSizeInBytes
-import pl.lemanski.pandaloop.core.utils.getTime
+import pl.lemanski.mikroaudio.MikroAudio
+import pl.lemanski.pandaloop.domain.dsp.Mixer
 import pl.lemanski.pandaloop.domain.model.exceptions.InvalidStateException
+import pl.lemanski.pandaloop.domain.model.timeSignature.TimeSignature
+import pl.lemanski.pandaloop.domain.model.timeSignature.emptyBuffer
+import pl.lemanski.pandaloop.domain.model.timeSignature.getBufferSizeInBytes
+import pl.lemanski.pandaloop.domain.model.timeSignature.getTime
 import pl.lemanski.pandaloop.domain.model.track.Track
 import pl.lemanski.pandaloop.domain.platform.log.Logger
-import pl.lemanski.pandaloop.dsp.Mixer
-import pl.lemanski.pandaloop.dsp.utils.toByteArray
-import pl.lemanski.pandaloop.dsp.utils.toFloatArray
+import pl.lemanski.pandaloop.domain.utils.Closeable
+import pl.lemanski.pandaloop.domain.utils.toByteArray
+import pl.lemanski.pandaloop.domain.utils.toFloatArray
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -28,7 +28,7 @@ class LoopContext(
     val timeSignature: TimeSignature,
     val tempo: Int,
     val measures: Int,
-    val loopCoordinator: PandaLoop = PandaLoop()
+    val loopCoordinator: MikroAudio = MikroAudio()
 ) : Closeable {
     private val logger = Logger.get(this::class)
     private val loopScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
@@ -56,14 +56,14 @@ class LoopContext(
 
         val recordingJob = loopScope.launch {
             val drift = 200L
-            val recordedBufferSize = loopCoordinator.getBufferSizeInBytes(timeSignature, tempo, measures)
+            val recordBufferSize = loopCoordinator.getBufferSizeInBytes(timeSignature, tempo, measures)
             var recordedBuffer: ByteArray = byteArrayOf()
 
             try {
-                loopCoordinator.startRecording(recordedBufferSize)
+                loopCoordinator.record(recordBufferSize)
                 logger.d { "Recording..." }
                 delay(timeSignature.getTime(tempo, measures) + drift)
-                recordedBuffer = loopCoordinator.stopRecording(recordedBufferSize)
+                recordedBuffer = loopCoordinator.stopRecording()
                 logger.d { "Recording Finished" }
             } catch (ignore: CancellationException) {
             } catch (ex: Exception) {
@@ -77,7 +77,7 @@ class LoopContext(
 
         continuation.invokeOnCancellation {
             recordingJob.cancel()
-            loopCoordinator.stopRecording(0)
+            loopCoordinator.stopRecording()
             logger.i { "Recording cancelled" }
             loopContextStateHolder.tryUpdateState(LoopContextStateHolder.State.IDLE)
             logger.d { "Loop context state: ${loopContextStateHolder.state}" }
@@ -90,7 +90,7 @@ class LoopContext(
         logger.d { "Loop context state: ${loopContextStateHolder.state}" }
 
         try {
-            loopCoordinator.startPlayback()
+            loopCoordinator.playback(playbackBuffer)
         } catch (ex: Exception) {
             logger.e { "Playback failed with exception: ${ex.message}" }
         }
@@ -102,7 +102,7 @@ class LoopContext(
             throw InvalidStateException("Cannot stop playback when not playing")
         }
 
-        loopCoordinator.pausePlayback()
+        loopCoordinator.stopPlayback()
 
         logger.d { "Playback stopped" }
         loopContextStateHolder.tryUpdateState(LoopContextStateHolder.State.IDLE)
@@ -133,7 +133,6 @@ class LoopContext(
     private fun mixTrack(track: Track, volume: Float) {
         try {
             playbackBuffer = mixer.mixPcmFramesF32(track.data.toFloatArray(), playbackBuffer.toFloatArray(), volume).toByteArray()
-            loopCoordinator.setPlaybackBuffer(playbackBuffer)
         } catch (ex: Exception) {
             logger.e { "Mixing failed with exception: ${ex.message}" }
         }

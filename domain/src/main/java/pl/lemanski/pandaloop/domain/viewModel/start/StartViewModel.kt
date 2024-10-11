@@ -5,8 +5,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import pl.lemanski.pandaloop.core.TimeSignature
 import pl.lemanski.pandaloop.domain.model.navigation.Destination
+import pl.lemanski.pandaloop.domain.model.timeSignature.TimeSignature
 import pl.lemanski.pandaloop.domain.model.visual.Component
 import pl.lemanski.pandaloop.domain.platform.i18n.Localization
 import pl.lemanski.pandaloop.domain.platform.log.Logger

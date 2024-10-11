@@ -15,9 +15,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import pl.lemanski.pandaloop.core.TimeSignature
-import pl.lemanski.pandaloop.core.utils.getTime
 import pl.lemanski.pandaloop.domain.model.navigation.Destination
+import pl.lemanski.pandaloop.domain.model.timeSignature.TimeSignature
+import pl.lemanski.pandaloop.domain.model.timeSignature.getTime
 import pl.lemanski.pandaloop.domain.platform.permission.PermissionManager
 import pl.lemanski.pandaloop.domain.service.navigation.NavigationService
 import pl.lemanski.pandaloop.domain.service.navigation.back

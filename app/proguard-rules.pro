@@ -1,0 +1,35 @@
+# Please add these rules to your existing keep rules in order to suppress warnings.
+# This is generated automatically by the Android Gradle plugin.
+-dontwarn pl.lemanski.pandaloop.domain.di.DependencyProvider
+-dontwarn pl.lemanski.pandaloop.domain.di.DependencyResolver
+-dontwarn pl.lemanski.pandaloop.domain.di.SingletonDependencyProvider
+-dontwarn pl.lemanski.pandaloop.domain.model.exceptions.DependencyResolutionException
+-dontwarn pl.lemanski.pandaloop.domain.model.exceptions.NavigationStateException
+-dontwarn pl.lemanski.pandaloop.domain.model.navigation.Destination$LoopScreen
+-dontwarn pl.lemanski.pandaloop.domain.model.navigation.Destination$RecordingScreen
+-dontwarn pl.lemanski.pandaloop.domain.model.navigation.Destination$StartScreen
+-dontwarn pl.lemanski.pandaloop.domain.model.navigation.Destination
+-dontwarn pl.lemanski.pandaloop.domain.model.navigation.NavigationEvent$Direction
+-dontwarn pl.lemanski.pandaloop.domain.model.navigation.NavigationEvent
+-dontwarn pl.lemanski.pandaloop.domain.model.visual.Component$Button
+-dontwarn pl.lemanski.pandaloop.domain.model.visual.Component$IconButton
+-dontwarn pl.lemanski.pandaloop.domain.model.visual.Component$MeasuresPicker
+-dontwarn pl.lemanski.pandaloop.domain.model.visual.Component$TempoPicker
+-dontwarn pl.lemanski.pandaloop.domain.model.visual.Component$TextSelect$Option
+-dontwarn pl.lemanski.pandaloop.domain.model.visual.Component$TextSelect
+-dontwarn pl.lemanski.pandaloop.domain.model.visual.Component
+-dontwarn pl.lemanski.pandaloop.domain.model.visual.IconResource
+-dontwarn pl.lemanski.pandaloop.domain.platform.i18n.Localization
+-dontwarn pl.lemanski.pandaloop.domain.platform.permission.PermissionManager
+-dontwarn pl.lemanski.pandaloop.domain.service.navigation.NavigationService
+-dontwarn pl.lemanski.pandaloop.domain.service.navigation.NavigationServiceImpl
+-dontwarn pl.lemanski.pandaloop.domain.service.navigation.NavigationServiceKt
+-dontwarn pl.lemanski.pandaloop.domain.viewModel.looper.LooperContract$State$TrackCard
+-dontwarn pl.lemanski.pandaloop.domain.viewModel.looper.LooperContract$State
+-dontwarn pl.lemanski.pandaloop.domain.viewModel.looper.LooperViewModel
+-dontwarn pl.lemanski.pandaloop.domain.viewModel.recording.RecordingContract$State$Metronome
+-dontwarn pl.lemanski.pandaloop.domain.viewModel.recording.RecordingContract$State
+-dontwarn pl.lemanski.pandaloop.domain.viewModel.recording.RecordingViewModel
+-dontwarn pl.lemanski.pandaloop.domain.viewModel.start.StartContract$State$TimeSignatureSelect
+-dontwarn pl.lemanski.pandaloop.domain.viewModel.start.StartContract$State
+-dontwarn pl.lemanski.pandaloop.domain.viewModel.start.StartViewModel
