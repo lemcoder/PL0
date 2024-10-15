@@ -12,5 +12,7 @@ sealed interface Destination {
 
     data class LoopScreen(val loopContext: LoopContext) : Destination
 
+    data class SequencerScreen(val loopContext: LoopContext) : Destination
+
     data class EffectsScreen(val trackNumber: Int) : Destination
 }

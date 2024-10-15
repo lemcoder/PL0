@@ -13,7 +13,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.lifecycle.Lifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -30,6 +29,7 @@ import pl.lemanski.pandaloop.platform.PermissionManagerImpl
 import pl.lemanski.pandaloop.platform.i18n.LocalizationImpl
 import pl.lemanski.pandaloop.presentation.looper.LooperRouter
 import pl.lemanski.pandaloop.presentation.recording.RecordingRouter
+import pl.lemanski.pandaloop.presentation.sequencer.SequencerRouter
 import pl.lemanski.pandaloop.presentation.start.StartRouter
 import pl.lemanski.pandaloop.presentation.visual.theme.PandaTheme
 
@@ -68,6 +68,11 @@ class MainActivity : ComponentActivity() {
                             BackHandler { navigationController.back() }
                             LooperRouter()
                         }
+
+                        composable(Destination.SequencerScreen::class.java.simpleName) {
+                            BackHandler { navigationController.back() }
+                            SequencerRouter()
+                        }
                     }
 
                     LaunchedEffect(navigationState.destination::class) {
@@ -77,7 +82,7 @@ class MainActivity : ComponentActivity() {
 
                         when (navigationState.direction) {
                             NavigationEvent.Direction.BACKWARD -> navHostController.popBackStack()
-                            NavigationEvent.Direction.FORWARD  -> navHostController.navigate(navigationState.destination.javaClass.simpleName)
+                            NavigationEvent.Direction.FORWARD -> navHostController.navigate(navigationState.destination.javaClass.simpleName)
                         }
                     }
                 }

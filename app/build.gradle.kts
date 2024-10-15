@@ -1,4 +1,4 @@
-import org.jetbrains.kotlin.config.LanguageVersion
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 
 plugins {
     alias(libs.plugins.androidApplication)
@@ -35,8 +35,8 @@ android {
     }
 
     composeCompiler {
-        enableStrongSkippingMode = true
-        enableNonSkippingGroupOptimization = true
+        featureFlags.add(ComposeFeatureFlag.StrongSkipping)
+        featureFlags.add(ComposeFeatureFlag.OptimizeNonSkippingGroups)
         stabilityConfigurationFile = file("compose-stability")
     }
 }

@@ -16,7 +16,9 @@ android {
     }
 
     testOptions {
-        unitTests.isReturnDefaultValues = true
+        unitTests {
+            isReturnDefaultValues = true
+        }
     }
 }
 
@@ -26,11 +28,11 @@ dependencies {
 
     // Panda Loop SDK
     implementation(libs.mikroaudio.core)
+    implementation(libs.mikrosoundfont.lib)
 
     implementation(libs.androidx.lifecycle.viewmodel)
     implementation(libs.kotlin.atomicfu)
 
     testImplementation(libs.kotlin.test)
     testImplementation(libs.coroutines.test)
-    testImplementation(libs.mockk)
 }

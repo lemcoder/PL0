@@ -1,29 +1,24 @@
 package pl.lemanski.pandaloop.domain.repository.loop
 
-import io.mockk.mockk
-import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Test
-import pl.lemanski.mikroaudio.AudioEngine
 import pl.lemanski.mikroaudio.MikroAudio
 import pl.lemanski.pandaloop.domain.model.exceptions.InvalidStateException
 import pl.lemanski.pandaloop.domain.model.timeSignature.TimeSignature
 import pl.lemanski.pandaloop.domain.model.track.Track
+import pl.lemanski.pandaloop.domain.utils.TestAudioEngine
 
 class LoopContextTest {
-
-    private val mockEngine: AudioEngine = mockk(relaxed = true)
 
     private fun TestScope.loopContext() = LoopContext(
         measures = 1,
         timeSignature = TimeSignature.COMMON,
         tempo = 60,
-        loopCoordinator = MikroAudio(mockEngine),
+        loopCoordinator = MikroAudio(TestAudioEngine()),
     )
 
     @Test

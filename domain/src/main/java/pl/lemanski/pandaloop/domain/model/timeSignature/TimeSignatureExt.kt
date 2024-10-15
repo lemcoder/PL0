@@ -20,7 +20,7 @@ internal fun MikroAudio.getBufferSizeInBytesWithTempo(timeSignature: TimeSignatu
         audioEngine.options.sampleRate.toDouble() * audioEngine.options.channelCount * bytesPerFrame * (timeInMs / 1000.0)
     ).toLong()
 
-    return bufferSize
+    return bufferSize - (bufferSize % bytesPerFrame) // ensure buffer size is multiple of 4 bytes
 }
 
 /**
@@ -43,7 +43,11 @@ fun MikroAudio.emptyBuffer(timeSignature: TimeSignature, tempo: Int, measures: I
  *
  * @return buffer size in bytes
  */
-fun MikroAudio.getBufferSizeInBytes(timeSignature: TimeSignature, tempo: Int, measures: Int = 1): Long = this.getBufferSizeInBytesWithTempo(timeSignature, tempo).coerceAtLeast(0) * measures
+fun MikroAudio.getBufferSizeInBytes(timeSignature: TimeSignature, tempo: Int, measures: Int = 1): Long {
+    val oneMeasureBufferSize = this.getBufferSizeInBytesWithTempo(timeSignature, tempo).coerceAtLeast(0)
+    val fullBufferSize = oneMeasureBufferSize * measures
+    return fullBufferSize - (fullBufferSize % 4)
+}
 
 /**
  * Get time in milliseconds for given time signature and tempo
