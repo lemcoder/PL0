@@ -30,3 +30,4 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "PL0"
 include(":app")
 include(":domain")
+include(":data")

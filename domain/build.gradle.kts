@@ -8,7 +8,7 @@ kotlin {
 }
 
 android {
-    namespace = "pl.lemanski.pandaloop"
+    namespace = "pl.lemanski.pandaloop.domain"
     compileSdk = 34
 
     defaultConfig {
