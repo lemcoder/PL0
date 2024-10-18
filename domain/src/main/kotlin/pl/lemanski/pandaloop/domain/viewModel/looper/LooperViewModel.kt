@@ -8,11 +8,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import pl.lemanski.pandaloop.domain.model.navigation.Destination
+import pl.lemanski.pandaloop.domain.model.navigation.LoopScreen
+import pl.lemanski.pandaloop.domain.model.navigation.RecordingScreen
 import pl.lemanski.pandaloop.domain.model.track.Track
 import pl.lemanski.pandaloop.domain.model.visual.Component
 import pl.lemanski.pandaloop.domain.model.visual.IconResource
 import pl.lemanski.pandaloop.domain.platform.log.Logger
+import pl.lemanski.pandaloop.domain.repository.loop.LoopContext
 import pl.lemanski.pandaloop.domain.repository.loop.LoopContextStateHolder
 import pl.lemanski.pandaloop.domain.service.navigation.NavigationService
 import pl.lemanski.pandaloop.domain.service.navigation.goTo
@@ -20,9 +22,13 @@ import pl.lemanski.pandaloop.domain.utils.Debounce
 
 class LooperViewModel(
     private val navigationService: NavigationService,
-    private val key: Destination.LoopScreen,
+    private val key: LoopScreen,
 ) : ViewModel(), LooperContract.ViewModel {
-    private val loopContext = key.loopContext
+    private val loopContext = LoopContext(
+        key.timeSignature,
+        key.tempo,
+        key.measures,
+    )
     private val logger = Logger.get(this::class)
     private val debouncedOnRecordButtonClick = Debounce(::onRecordClick)
     private val _stateFlow = MutableStateFlow(
@@ -69,7 +75,7 @@ class LooperViewModel(
         }
 
         navigationService.goTo(
-            destination = Destination.RecordingScreen(
+            destination = RecordingScreen(
                 loopContext = loopContext,
                 trackNumber = loopContext.tracks.size
             )

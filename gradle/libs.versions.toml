@@ -5,17 +5,16 @@ mikroSoundFont = "0.0.2"
 coroutines = "1.9.0-RC"
 atomicfu = "0.24.0"
 lifecycleViewModel = "2.8.6"
+serialization = "1.7.0"
 
 activityCompose = "1.9.3"
 composeBom = "2024.10.00"
-navigationComposeVersion = "2.8.3"
 
 # Plugins
 agp = "8.7.1"
 kotlin = "2.0.20"
 
 [libraries]
-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationComposeVersion" }
 mikroaudio-core = { module = "pl.lemanski.mikroaudio:core-android", version.ref = "mikroAudio" }
 mikrosoundfont-lib = { module = "pl.lemanski.mikrosoundfont:lib-android", version.ref = "mikroSoundFont" }
 androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "lifecycleViewModel" }
@@ -27,6 +26,7 @@ coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-androi
 
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 kotlin-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
+kotlin-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 
 # Compose
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
@@ -43,5 +43,7 @@ kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotl
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
-jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-atomicfu = { id = "org.jetbrains.kotlin.plugin.atomicfu", version.ref = "kotlin" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

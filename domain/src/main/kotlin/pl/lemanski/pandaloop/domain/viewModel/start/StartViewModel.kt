@@ -5,12 +5,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import pl.lemanski.pandaloop.domain.model.navigation.Destination
+import pl.lemanski.pandaloop.domain.model.navigation.LoopScreen
 import pl.lemanski.pandaloop.domain.model.timeSignature.TimeSignature
 import pl.lemanski.pandaloop.domain.model.visual.Component
 import pl.lemanski.pandaloop.domain.platform.i18n.Localization
 import pl.lemanski.pandaloop.domain.platform.log.Logger
-import pl.lemanski.pandaloop.domain.repository.loop.LoopContext
 import pl.lemanski.pandaloop.domain.service.navigation.NavigationService
 import pl.lemanski.pandaloop.domain.service.navigation.goTo
 import pl.lemanski.pandaloop.domain.utils.Debounce
@@ -91,12 +90,10 @@ class StartViewModel(
         val measures = _stateFlow.value.measuresPicker.measures
 
         navigationService.goTo(
-            Destination.LoopScreen(
-                loopContext = LoopContext(
-                    tempo = tempo,
-                    timeSignature = timeSignature,
-                    measures = measures
-                ),
+            LoopScreen(
+                tempo = tempo,
+                timeSignature = timeSignature,
+                measures = measures
             )
         )
     }

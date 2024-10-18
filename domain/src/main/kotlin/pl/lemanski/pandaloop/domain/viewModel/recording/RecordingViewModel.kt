@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import pl.lemanski.pandaloop.domain.model.navigation.Destination
+import pl.lemanski.pandaloop.domain.model.navigation.RecordingScreen
 import pl.lemanski.pandaloop.domain.model.timeSignature.TimeSignature
 import pl.lemanski.pandaloop.domain.model.timeSignature.getTime
 import pl.lemanski.pandaloop.domain.platform.permission.PermissionManager
@@ -25,7 +25,7 @@ import pl.lemanski.pandaloop.domain.service.navigation.back
 class RecordingViewModel(
     private val permissionManager: PermissionManager,
     private val navigationService: NavigationService,
-    private val key: Destination.RecordingScreen,
+    private val key: RecordingScreen,
     context: Context
 ) : RecordingContract.ViewModel, ViewModel() {
     private val audioManager = context.getSystemService(AUDIO_SERVICE) as AudioManager
@@ -105,7 +105,7 @@ class RecordingViewModel(
     }
 
     private fun TimeSignature.getCountdown(): Int = when (this) {
-        TimeSignature.COMMON      -> 4
+        TimeSignature.COMMON -> 4
         TimeSignature.THREE_FOURS -> 3
     }
 

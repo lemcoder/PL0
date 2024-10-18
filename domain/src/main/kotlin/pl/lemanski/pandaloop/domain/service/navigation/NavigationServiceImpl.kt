@@ -6,11 +6,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import pl.lemanski.pandaloop.domain.model.navigation.Destination
 import pl.lemanski.pandaloop.domain.model.navigation.NavigationEvent
+import pl.lemanski.pandaloop.domain.model.navigation.StartScreen
 import pl.lemanski.pandaloop.domain.platform.log.Logger
 
 class NavigationServiceImpl : NavigationService() {
     private val logger: Logger = Logger.get(this::class)
-    override val navStack: ArrayDeque<Destination> = ArrayDeque(listOf(Destination.StartScreen))
+    override val navStack: ArrayDeque<Destination> = ArrayDeque(listOf(StartScreen))
     private val _navigationState: MutableStateFlow<NavigationEvent> = MutableStateFlow(
         NavigationEvent(
             destination = navStack.last(),

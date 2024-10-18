@@ -1,6 +1,6 @@
 plugins {
+    alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.jetbrainsKotlinAndroid)
 }
 
 android {
@@ -24,8 +24,12 @@ android {
 
 kotlin {
     jvmToolchain(17)
-}
 
-dependencies {
-    implementation(projects.domain)
+    androidTarget()
+
+    sourceSets {
+        commonMain.dependencies {
+
+        }
+    }
 }

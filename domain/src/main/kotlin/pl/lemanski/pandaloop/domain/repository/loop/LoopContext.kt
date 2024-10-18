@@ -24,6 +24,7 @@ import pl.lemanski.pandaloop.domain.utils.toFloatArray
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
+
 class LoopContext(
     val timeSignature: TimeSignature,
     val tempo: Int,

@@ -1,10 +1,7 @@
 plugins {
     alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.jetbrainsKotlinAndroid)
-}
-
-kotlin {
-    jvmToolchain(17)
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -22,17 +19,30 @@ android {
     }
 }
 
-dependencies {
-    api(libs.coroutines.core)
-    runtimeOnly(libs.coroutines.android)
+kotlin {
+    jvmToolchain(17)
 
-    // Panda Loop SDK
-    implementation(libs.mikroaudio.core)
-    implementation(libs.mikrosoundfont.lib)
+    androidTarget()
 
-    implementation(libs.androidx.lifecycle.viewmodel)
-    implementation(libs.kotlin.atomicfu)
+    sourceSets {
+        commonMain.dependencies {
+            api(libs.coroutines.core)
+            api(libs.kotlin.serialization)
 
-    testImplementation(libs.kotlin.test)
-    testImplementation(libs.coroutines.test)
+            implementation(libs.mikroaudio.core)
+            implementation(libs.mikrosoundfont.lib)
+
+            implementation(libs.androidx.lifecycle.viewmodel)
+            implementation(libs.kotlin.atomicfu)
+        }
+
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.coroutines.test)
+        }
+
+        androidMain.dependencies {
+            runtimeOnly(libs.coroutines.android)
+        }
+    }
 }

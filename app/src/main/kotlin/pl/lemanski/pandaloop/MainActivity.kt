@@ -5,21 +5,18 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import pl.lemanski.pandaloop.domain.di.DependencyResolver
 import pl.lemanski.pandaloop.domain.di.SingletonDependencyProvider
-import pl.lemanski.pandaloop.domain.model.navigation.Destination
-import pl.lemanski.pandaloop.domain.model.navigation.NavigationEvent
+import pl.lemanski.pandaloop.domain.model.navigation.EffectsScreen
+import pl.lemanski.pandaloop.domain.model.navigation.LoopScreen
+import pl.lemanski.pandaloop.domain.model.navigation.RecordingScreen
+import pl.lemanski.pandaloop.domain.model.navigation.SequencerScreen
+import pl.lemanski.pandaloop.domain.model.navigation.StartScreen
 import pl.lemanski.pandaloop.domain.platform.i18n.Localization
 import pl.lemanski.pandaloop.domain.platform.permission.PermissionManager
 import pl.lemanski.pandaloop.domain.service.navigation.NavigationService
@@ -42,48 +39,18 @@ class MainActivity : ComponentActivity() {
         setContent {
             PandaTheme {
                 Surface {
-                    val navHostController = rememberNavController()
-                    navHostController.enableOnBackPressed(false)
                     val navigationController = rememberNavigationController()
                     val navigationState by navigationController.navigationState.collectAsState()
 
-                    NavHost(
-                        navController = navHostController,
-                        startDestination = Destination.StartScreen::class.java.simpleName,
-                        enterTransition = { EnterTransition.None },
-                        exitTransition = { ExitTransition.None },
-                        popEnterTransition = { EnterTransition.None },
-                        popExitTransition = { ExitTransition.None },
-                    ) {
-                        composable(Destination.StartScreen::class.java.simpleName) {
-                            StartRouter()
-                        }
+                    BackHandler { navigationController.back() }
 
-                        composable(Destination.RecordingScreen::class.java.simpleName) {
-                            BackHandler { navigationController.back() }
-                            RecordingRouter()
+                    when (navigationState.destination) {
+                        is EffectsScreen   -> { /* TODO */
                         }
-
-                        composable(Destination.LoopScreen::class.java.simpleName) {
-                            BackHandler { navigationController.back() }
-                            LooperRouter()
-                        }
-
-                        composable(Destination.SequencerScreen::class.java.simpleName) {
-                            BackHandler { navigationController.back() }
-                            SequencerRouter()
-                        }
-                    }
-
-                    LaunchedEffect(navigationState.destination::class) {
-                        if (navHostController.currentDestination?.route == navigationState.destination.javaClass.simpleName) {
-                            return@LaunchedEffect
-                        }
-
-                        when (navigationState.direction) {
-                            NavigationEvent.Direction.BACKWARD -> navHostController.popBackStack()
-                            NavigationEvent.Direction.FORWARD -> navHostController.navigate(navigationState.destination.javaClass.simpleName)
-                        }
+                        is LoopScreen      -> LooperRouter()
+                        is RecordingScreen -> RecordingRouter()
+                        is SequencerScreen -> SequencerRouter()
+                        StartScreen        -> StartRouter()
                     }
                 }
             }

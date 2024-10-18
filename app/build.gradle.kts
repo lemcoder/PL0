@@ -2,12 +2,8 @@ import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 
 plugins {
     alias(libs.plugins.androidApplication)
-    alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
-}
-
-kotlin {
-    jvmToolchain(17)
 }
 
 android {
@@ -17,7 +13,7 @@ android {
     defaultConfig {
         applicationId = "pl.lemanski.pandaloop"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 2
         versionName = "0.0.1"
     }
@@ -41,11 +37,14 @@ android {
     }
 }
 
+kotlin {
+    jvmToolchain(17)
+}
+
 dependencies {
     implementation(projects.domain)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
-    implementation(libs.navigation.compose)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
